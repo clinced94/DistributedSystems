@@ -26,7 +26,8 @@ initSocket :: IO Socket
 initSocket = do
 	newSocket <- socket AF_INET Stream 0
 	setSocketOption newSocket ReuseAddr 1
-	bind newSocket $ SockAddrInet 7000 iNADDR_ANY
+	addr:_ <- getAddrInfo Nothing (Just "127.0.0.1") (Just "7000")
+	bind newSocket (addrAddress addr)
 	return newSocket
 
 receiveMessage :: Socket -> MVar Int -> MVar () -> IO ()
@@ -36,9 +37,9 @@ receiveMessage sock count killSwitch = do
 	handleMessage sock message count killSwitch
 
 handleMessage :: Socket -> String -> MVar Int -> MVar () -> IO ()
-handleMessage s msg count killSwitch 	| startswith msg "HELO text" 	= Network.Socket.ByteString.send s (pack msg) >> return ()
-										| startswith msg "KILL_SERVICE"	= putMVar killSwitch ()
-										| otherwise = return ()
+handleMessage s msg count killSwitch 	| startswith "HELO text" msg	= System.IO.putStrLn "Dealing with message" >> Network.Socket.ByteString.send s (pack $ msg ++ "IP:127.0.0.1\nPort:[port number]\nStudentID:13320590\n") >> return ()
+										| startswith "KILL_SERVICE" msg	= System.IO.putStrLn "Killswitch Active" >> putMVar killSwitch ()
+										| otherwise = System.IO.putStrLn "Nothing is being done" >> return ()
 
 endThread :: Socket -> MVar Int -> IO ()
 endThread s count = do
