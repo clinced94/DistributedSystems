@@ -12,6 +12,11 @@ import Data.String
 import Data.Bool
 import Data.ByteString.Char8
 
+startswith :: String -> String -> Bool
+startswith [] _ = True
+startswith (x:xs) (y:ys) 	| x == y = startswith xs ys
+							| otherwise = False
+
 incSocketCount :: MVar Int -> IO ()
 incSocketCount count = do
 	num <- takeMVar count
@@ -32,14 +37,22 @@ initSocket = do
 
 receiveMessage :: Socket -> MVar Int -> MVar () -> IO ()
 receiveMessage sock count killSwitch = do
-	message <- Network.Socket.recv sock 4096
-	System.IO.putStrLn $ "Message: " ++ message
-	handleMessage sock message count killSwitch
+	message <- Network.Socket.ByteString.recv sock 4096
+	System.IO.putStrLn $ "Message: " ++ (unpack message)
+	handleMessage sock (unpack message) count killSwitch
 
 handleMessage :: Socket -> String -> MVar Int -> MVar () -> IO ()
-handleMessage s msg count killSwitch 	| startswith "HELO text" msg	= System.IO.putStrLn "Dealing with message" >> Network.Socket.ByteString.send s (pack $ msg ++ "IP:127.0.0.1\nPort:[port number]\nStudentID:13320590\n") >> return ()
-										| startswith "KILL_SERVICE" msg	= System.IO.putStrLn "Killswitch Active" >> putMVar killSwitch ()
-										| otherwise = System.IO.putStrLn "Nothing is being done" >> return ()
+handleMessage s msg count killSwitch 	| startswith "HELO text" msg	= do 
+											System.IO.putStrLn "Dealing with message" 
+											Network.Socket.ByteString.send s (pack $ msg ++ "IP:127.0.0.1\nPort:7000\nStudentID:13320590\n")
+											System.IO.putStrLn "Response sent" 
+											return ()
+										| startswith "KILL_SERVICE" msg	= do
+											System.IO.putStrLn "Killswitch Active"
+											putMVar killSwitch ()
+										| otherwise = do 
+											System.IO.putStrLn "Nothing is being done"
+											return ()
 
 endThread :: Socket -> MVar Int -> IO ()
 endThread s count = do
@@ -75,8 +88,3 @@ main = do
 	_ <- forkIO $ server newSocket killSwitch
 	takeMVar killSwitch
 	System.IO.putStrLn "Terminating server"
-
-startswith :: String -> String -> Bool
-startswith [] _ = True
-startswith (x:xs) (y:ys) 	| x == y = startswith xs ys
-							| otherwise = False
