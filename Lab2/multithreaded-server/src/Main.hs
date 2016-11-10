@@ -42,7 +42,7 @@ receiveMessage sock count killSwitch host port = do
 	handleMessage sock (unpack message) count killSwitch host port
 
 handleMessage :: Socket -> String -> MVar Int -> MVar () -> String -> String -> IO ()
-handleMessage s msg count killSwitch host port 	| startswith "HELO text" msg	= do 
+handleMessage s msg count killSwitch host port 	| startswith "HELO" msg	= do 
 													System.IO.putStrLn "Dealing with message" 
 													Network.Socket.ByteString.send s (pack $ msg ++ "IP:" ++ host ++ "\nPort:" ++ port ++"\nStudentID:13320590\n")
 													System.IO.putStrLn "Response sent" 
