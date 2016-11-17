@@ -10,12 +10,21 @@ import System.IO
 import Data.List
 import Data.String
 import Data.Bool
-import Data.ByteString.Char8
+import Data.Maybe
+import qualified Data.ByteString.Char8 as B
+
+type Name = String
+type IP = String
+type Port = String
+
+data Client = Client IP Port Name
+data Chatroom = Chatroom Name [Client]
 
 startswith :: String -> String -> Bool
 startswith [] _ = True
-startswith (x:xs) (y:ys) 	| x == y = startswith xs ys
-							| otherwise = False
+startswith (x:xs) (y:ys)
+	| x == y = startswith xs ys
+	| otherwise = False
 
 incSocketCount :: MVar Int -> IO ()
 incSocketCount count = do
@@ -35,24 +44,37 @@ initSocket host port = do
 	bind newSocket (addrAddress addr)
 	return newSocket
 
-receiveMessage :: Socket -> MVar Int -> MVar () -> String -> String -> IO ()
-receiveMessage sock count killSwitch host port = do
+receiveMessage :: Socket -> MVar () -> String -> String -> IO ()
+receiveMessage sock killSwitch host port = do
 	message <- Network.Socket.ByteString.recv sock 4096
-	System.IO.putStrLn $ "Message: " ++ (unpack message)
-	handleMessage sock (unpack message) count killSwitch host port
+	System.IO.putStrLn $ "Message: " ++ (B.unpack message)
+	handleMessage sock (B.unpack message) killSwitch host port
 
-handleMessage :: Socket -> String -> MVar Int -> MVar () -> String -> String -> IO ()
-handleMessage s msg count killSwitch host port 	| startswith "HELO" msg	= do
-													System.IO.putStrLn "Dealing with message"
-													Network.Socket.ByteString.send s (pack $ msg ++ "IP:" ++ host ++ "\nPort:" ++ port ++"\nStudentID:13320590\n")
-													System.IO.putStrLn "Response sent"
-													return ()
-												| startswith "KILL_SERVICE" msg	= do
-													System.IO.putStrLn "Killswitch Active"
-													putMVar killSwitch ()
-												| otherwise = do
-													System.IO.putStrLn "Nothing is being done"
-													return ()
+handleMessage :: Socket -> String -> MVar () -> String -> String -> IO ()
+handleMessage s msg killSwitch host port
+	| startswith "JOIN_CHATROOM" msg = enterChatroom msg host port
+	| startswith "HELO" msg	= do
+		System.IO.putStrLn "Dealing with message"
+		Network.Socket.ByteString.send s (B.pack $ msg ++ "IP:" ++ host ++ "\nPort:" ++ port ++"\nStudentID:13320590\n")
+		System.IO.putStrLn "Response sent"
+		return ()
+	| startswith "KILL_SERVICE" msg	= do
+		System.IO.putStrLn "Killswitch Active"
+		putMVar killSwitch ()
+	| otherwise = do
+		System.IO.putStrLn "Nothing is being done"
+		return ()
+
+enterChatroom :: String -> String -> String -> IO ()
+enterChatroom msg port host = do
+	(room, client) <- getMesgInfo msg
+	putStrLn room
+
+getMesgInfo :: String -> IO (String,String)
+getMesgInfo msg = return (roomName, clientName) where
+	mgsLines = lines msg
+	roomName = drop 15 (mgsLines !! 0)
+	clientName = drop 13 (mgsLines !! 3)
 
 endThread :: Socket -> MVar Int -> IO ()
 endThread s count = do
@@ -61,24 +83,26 @@ endThread s count = do
 
 server :: Socket -> MVar () -> String -> String -> IO ()
 server sock killSwitch host port = do
+	let rooms = []
 	listen sock 4
-	count <- newMVar 4
-	serverLoop sock count killSwitch host port
+	serverLoop sock killSwitch host port rooms
 
-serverLoop :: Socket -> MVar Int -> MVar () -> String -> String -> IO ()
-serverLoop sock count killSwitch host port = do
+serverLoop :: Socket -> MVar () -> String -> String -> [Chatroom] -> IO ()
+serverLoop sock killSwitch host port rooms = do
 	(usableSocket,clientInfo) <- accept sock
 	System.IO.putStrLn $ "Connection from: " ++ (show clientInfo)
-	currentCount <- takeMVar count
-	putMVar count currentCount
-	if currentCount == 0
-		then do
-			close usableSocket
-			serverLoop sock count killSwitch host port
-			else do
-				decSocketCount count
-				_ <- forkFinally (receiveMessage usableSocket count killSwitch host port) (\_ -> endThread usableSocket count)
-				serverLoop sock count killSwitch host port
+	forkIO (receiveMessage usableSocket killSwitch host port)
+	--_ <- forkFinally (receiveMessage usableSocket count killSwitch host port) (\_ -> endThread usableSocket count)
+	serverLoop sock killSwitch host port rooms
+
+findChatroom :: String -> [Chatroom] -> Maybe Chatroom
+findChatroom _ [] = Nothing
+findChatroom name (room:rooms)
+	| roomName room == name = Just room
+	| otherwise = findChatroom name rooms
+
+roomName :: Chatroom -> String
+roomName (Chatroom name _) = name
 
 main :: IO ()
 main = do
