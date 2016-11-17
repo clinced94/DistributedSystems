@@ -47,6 +47,9 @@ handleMessage s msg count killSwitch host port 	| startswith "HELO" msg	= do
 													Network.Socket.ByteString.send s (pack $ msg ++ "IP:" ++ host ++ "\nPort:" ++ port ++"\nStudentID:13320590\n")
 													System.IO.putStrLn "Response sent"
 													return ()
+												| startswith "KILL_SERVICE" msg	= do
+													System.IO.putStrLn "Killswitch Active"
+													putMVar killSwitch ()
 												| otherwise = do
 													System.IO.putStrLn "Nothing is being done"
 													return ()
