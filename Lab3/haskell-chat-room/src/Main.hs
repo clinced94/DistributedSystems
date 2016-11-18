@@ -16,9 +16,75 @@ import qualified Data.ByteString.Char8 as B
 type Name = String
 type IP = String
 type Port = String
+type ID = Int
 
-data Client = Client IP Port Name
-data Chatroom = Chatroom Name [Client]
+data Client = Client IP Port Name ID
+	deriving Eq
+
+data Chatroom = Chatroom Name [Client] ID
+	deriving Eq
+
+------------------------------------------
+-- ID Generator for Client and Chatroom --
+------------------------------------------
+
+type IDGenerator = MVar ID
+
+newIdGenerator :: IO (MVar ID)
+newIdGenerator = newMVar 0
+
+getNewId :: IDGenerator -> IO ID
+getNewId gen = do
+	newId <- takeMVar gen
+	putMVar gen (newId + 1)
+	return newId
+
+------------------------
+-- Chatroom Functions --
+------------------------
+initChatrooms :: IO ([MVar Chatroom])
+initChatrooms = return []
+
+roomName :: Chatroom -> Name
+roomName (Chatroom name _ _) = name
+
+roomClients :: Chatroom -> [Client]
+roomClients (Chatroom _ clients _) = clients
+
+roomId :: Chatroom -> ID
+roomId (Chatroom _ _ rmId) = rmId
+
+isEmpty :: Chatroom -> Bool
+isEmpty (Chatroom _ clients _) = null clients
+
+addChatroom :: [MVar Chatroom] -> Name -> IDGenerator -> IO [MVar Chatroom]
+addChatroom rooms n gen = do
+	newCR <- createChatroom n gen
+	return (rooms ++ [newCR])
+
+createChatroom :: Name -> IDGenerator -> IO (MVar Chatroom)
+createChatroom n gen = do
+	newId <- getNewId gen
+	newMVar (Chatroom n [] newId)
+
+getChatroom :: Name -> [MVar Chatroom] -> IO (Maybe Chatroom)
+getChatroom _ [] = return Nothing
+getChatroom name (room:rooms) = do
+	currentChatroom <- takeMVar room
+	putMVar room currentChatroom
+	if name == roomName currentChatroom
+		then return (Just currentChatroom)
+		else getChatroom name rooms
+
+addClient :: Client -> MVar Chatroom -> IO ()
+addClient client room = do
+	(Chatroom name clients rmId) <- takeMVar room
+	putMVar room (Chatroom name (clients ++ [client]) rmId)
+
+removeClient :: Client -> MVar Chatroom -> IO ()
+removeClient client room = do
+	(Chatroom name clients rmId) <- takeMVar room
+	putMVar room (Chatroom name (clients \\ [client]) rmId)
 
 startswith :: String -> String -> Bool
 startswith [] _ = True
@@ -35,6 +101,10 @@ decSocketCount :: MVar Int -> IO ()
 decSocketCount count = do
 	num <- takeMVar count
 	putMVar count (num - 1)
+
+------------
+-- Server --
+------------
 
 initSocket :: String -> String -> IO Socket
 initSocket host port = do
@@ -95,14 +165,9 @@ serverLoop sock killSwitch host port rooms = do
 	--_ <- forkFinally (receiveMessage usableSocket count killSwitch host port) (\_ -> endThread usableSocket count)
 	serverLoop sock killSwitch host port rooms
 
-findChatroom :: String -> [Chatroom] -> Maybe Chatroom
-findChatroom _ [] = Nothing
-findChatroom name (room:rooms)
-	| roomName room == name = Just room
-	| otherwise = findChatroom name rooms
-
-roomName :: Chatroom -> String
-roomName (Chatroom name _) = name
+----------
+-- Main --
+----------
 
 main :: IO ()
 main = do
@@ -110,6 +175,8 @@ main = do
 	System.IO.putStrLn $ "Starting server on " ++ host ++ ":" ++ port
 	newSocket <- initSocket host port
 	killSwitch <- newEmptyMVar
+	chats <- initChatrooms
+	gen <- newIdGenerator
 	System.IO.putStrLn "Server ready"
 	_ <- forkIO $ server newSocket killSwitch host port
 	takeMVar killSwitch
