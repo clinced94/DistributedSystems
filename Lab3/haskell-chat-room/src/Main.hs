@@ -18,7 +18,7 @@ type IP = String
 type Port = String
 type ID = Int
 
-data Client = Client IP Port Name ID
+data Client = Client IP Port Name Socket ID
 	deriving Eq
 
 data Chatroom = Chatroom Name [Client] ID
@@ -66,16 +66,24 @@ isRoomEmpty :: Chatroom -> Bool
 isRoomEmpty (Chatroom _ clients _) = null clients
 
 getClientIP :: Client -> IP
-getClientIP (Client ip _ _ _) = ip
+getClientIP (Client ip _ _ _ _) = ip
 
 getClientPort :: Client -> Port
-getClientPort (Client _ port _ _) = port
+getClientPort (Client _ port _ _ _) = port
 
 getClientName :: Client -> Name
-getClientName (Client _ _ name _) = name
+getClientName (Client _ _ name _ _) = name
+
+getClientSocket :: Client -> Socket
+getClientSocket (Client _ _ _ sock _) = sock
 
 getClientID :: Client -> ID
-getClientID (Client _ _ _ cId) = cId
+getClientID (Client _ _ _ _ cId) = cId
+
+findById :: [Client] -> ID -> Client
+findById (c:cs) i
+	| (getClientID c) == i = c
+	| otherwise = findById cs i
 
 insertChatroom :: Forum -> MVar Chatroom -> IO ()
 insertChatroom forum newRm = do
@@ -88,15 +96,28 @@ createChatroom n gen = do
 	newMVar (Chatroom n [] newId)
 
 getChatroom :: Name -> [MVar Chatroom] -> IO (Maybe (MVar Chatroom))
-getChatroom name [] = do
-	putStrLn "DEBUG: getChatroom is returning Nothing\n"
-	return Nothing
+getChatroom name [] = return Nothing
 getChatroom name (room:rooms) = do
 	currentChatroom <- takeMVar room
 	putMVar room currentChatroom
 	if name == getRoomName currentChatroom
 		then return (Just room)
 		else getChatroom name rooms
+
+getChatroomByID :: ID -> [MVar Chatroom] -> IO (Maybe (MVar Chatroom))
+getChatroomByID cId [] = return Nothing
+getChatroomByID cId (room:rooms) = do
+	currentChatroom <- takeMVar room
+	putMVar room currentChatroom
+	if cId == getRoomId currentChatroom
+		then return (Just room)
+		else getChatroomByID cId rooms
+
+getClientByID :: ID -> [Client] -> Maybe (Client)
+getClientByID _ [] = Nothing
+getClientByID cId (c:cs)
+	| cId == (getClientID c) = Just c
+	| otherwise = getClientByID cId cs
 
 addClient :: Client -> MVar Chatroom -> IO ()
 addClient client room = do
@@ -158,6 +179,8 @@ receiveMessage sock killSwitch host port clientInfo forum gen = do
 handleMessage :: Socket -> String -> MVar () -> String -> String -> String -> Forum -> IDGenerator -> IO ()
 handleMessage s msg killSwitch host port clientInfo forum gen
 	| startswith "JOIN_CHATROOM" msg = enterChatroom s msg host port clientInfo forum gen
+	| startswith "LEAVE_CHATROOM" msg = leaveChatroom s msg forum
+	| startswith "DISCONNECT" msg = disconnectClient s
 	| startswith "HELO" msg	= do
 		System.IO.putStrLn "Dealing with message"
 		NSB.send s (B.pack $ msg ++ "IP:" ++ host ++ "\nPort:" ++ port ++"\nStudentID:13320590\n")
@@ -172,31 +195,27 @@ handleMessage s msg killSwitch host port clientInfo forum gen
 
 enterChatroom :: Socket -> String -> String -> String -> String -> Forum -> IDGenerator -> IO ()
 enterChatroom s msg port host clientInfo forum gen = do
-	(roomName, clientName) <- getMesgInfo msg
-	putStrLn roomName
+	(roomName, clientName) <- getJoinMesgInfo msg
 	chats <- takeMVar forum
+	let clientIp = takeWhile (/= ':') clientInfo
+	let clientPort = tail $ dropWhile (/= ':') clientInfo
+	newCId <- getNewId gen
+	let newClient = (Client clientIp clientPort clientName s newCId)
 	foundRoom <- getChatroom roomName chats
 	if (isJust foundRoom)
 		then do
-			let clientIp = takeWhile (/= ':') clientInfo
-			let clientPort = tail $ dropWhile (/= ':') clientInfo
-			newCId <- getNewId gen
-			let newClient = (Client clientIp clientPort clientName newCId)
 			addClient newClient (fromJust foundRoom)
 			chatroom <- takeMVar (fromJust foundRoom)
-			sendResponse s newClient host port chatroom
+			sendJoinResponse s newClient host port chatroom
+			broadcastJoin newClient chatroom
 			putMVar (fromJust foundRoom) chatroom
 			putMVar forum chats
 			else do
 				newChatroom <- createChatroom roomName gen
-				printAllChatrooms (chats ++ [newChatroom])
-				let clientIp = takeWhile (/= ':') clientInfo
-				let clientPort = tail $ dropWhile (/= ':') clientInfo
-				newCId <- getNewId gen
-				let newClient = (Client clientIp clientPort clientName newCId)
 				addClient newClient newChatroom
 				newChat <- takeMVar newChatroom
-				sendResponse s newClient host port newChat
+				sendJoinResponse s newClient host port newChat
+				broadcastJoin newClient newChat
 				putMVar newChatroom newChat
 				putMVar forum (chats ++ [newChatroom])
 
@@ -208,21 +227,96 @@ printAllChatrooms (room:rooms) = do
 	putStrLn $ getRoomName curr
 	printAllChatrooms rooms
 
-getMesgInfo :: String -> IO (String,String)
-getMesgInfo msg = return (roomName, clientName) where
+getJoinMesgInfo :: String -> IO (String,String)
+getJoinMesgInfo msg = return (roomName, clientName) where
 	mgsLines = lines msg
 	roomName = drop 15 (mgsLines !! 0)
-	clientName = drop 13 (mgsLines !! 3)
+	clientName = drop 14 (mgsLines !! 3)
 
-sendResponse :: Socket -> Client -> String -> String -> Chatroom -> IO ()
-sendResponse s c serverIP serverPort chatroom = do
-	let responseMsg = clientResponse c serverIP serverPort chatroom
+sendJoinResponse :: Socket -> Client -> String -> String -> Chatroom -> IO ()
+sendJoinResponse s c serverIP serverPort chatroom = do
+	let responseMsg = clientJoinResponse c serverIP serverPort chatroom
 	putStrLn $ "Response: \n" ++ responseMsg
 	NSB.send s $ B.pack responseMsg
 	return ()
 
-clientResponse :: Client -> String -> String -> Chatroom -> String
-clientResponse c serverIP serverPort chatroom = "JOINED_CHATROOM: " ++ (getRoomName chatroom) ++ "\nSERVER_IP: " ++ serverIP ++ "\nPORT: " ++ serverPort ++ "\nROOM_REF: " ++ show (getRoomId chatroom) ++ "\nJOIN_ID: " ++ show (getClientID c) ++ "\n\n"
+clientJoinResponse :: Client -> String -> String -> Chatroom -> String
+clientJoinResponse c serverIP serverPort chatroom = "JOINED_CHATROOM: " ++ (getRoomName chatroom) ++ "\nSERVER_IP: " ++ serverIP ++ "\nPORT: " ++ serverPort ++ "\nROOM_REF: " ++ show (getRoomId chatroom) ++ "\nJOIN_ID: " ++ show (getClientID c) ++ "\n\n"
+
+broadcastJoin :: Client -> Chatroom -> IO ()
+broadcastJoin c ch = do
+	let broadcastMsg = chatroomJoinBroadcast c ch
+	putStrLn "Broadcasting..."
+	head $ map (\x -> sendToClient x broadcastMsg) (getRoomClients ch)
+	putStrLn "Broadcast sent!"
+
+chatroomJoinBroadcast :: Client -> Chatroom -> String
+chatroomJoinBroadcast c chatroom = "User " ++ (getClientName c) ++ " has joined chatroom " ++ (getRoomName chatroom) ++ ".\n\n"
+
+leaveChatroom :: Socket -> String -> Forum -> IO ()
+leaveChatroom s msg forumMV = do
+	let (chatroomID, clientID, clientName) = getLeaveMessageInfo msg
+	forum <- takeMVar forumMV
+	maybeChatroomMV <- getChatroomByID (read chatroomID) forum
+	if isJust maybeChatroomMV
+		then do
+			let chatroomMV = fromJust maybeChatroomMV
+			chatroom <- takeMVar chatroomMV
+			let maybeClient = getClientByID (read clientID) $ getRoomClients chatroom
+			if isJust maybeClient
+				then do
+					broadcastLeave (fromJust maybeClient) chatroom
+					sendLeaveResponse (fromJust maybeClient) chatroom
+					putMVar chatroomMV (Chatroom (getRoomName chatroom) ((getRoomClients chatroom) \\ [(fromJust maybeClient)]) (getRoomId chatroom))
+					putMVar forumMV forum
+					else do
+						sendPseudoLeaveResponse s clientID chatroomID
+						putMVar forumMV forum
+				else do
+					sendPseudoLeaveResponse s clientID chatroomID
+					putMVar forumMV forum
+
+getLeaveMessageInfo :: String -> (String, String, String)
+getLeaveMessageInfo msg = (chId, clId, clNm) where
+	msgLines = lines msg
+	chId = drop 16 (msgLines !! 0)
+	clId = drop 9 (msgLines !! 1)
+	clNm = drop 13 (msgLines !! 2)
+
+broadcastLeave :: Client -> Chatroom -> IO ()
+broadcastLeave cl ch = do
+	let broadcastMsg = chatroomLeaveBroadcast cl
+	putStrLn "Broadcasting leave"
+	head $ map (\x -> sendToClient x broadcastMsg) (getRoomClients ch)
+	putStrLn "Leave broadcast sent!"
+
+chatroomLeaveBroadcast :: Client -> String
+chatroomLeaveBroadcast cl = "User " ++ (getClientName cl) ++ " has left the room."
+
+sendLeaveResponse :: Client -> Chatroom -> IO ()
+sendLeaveResponse cl ch = do
+	let responseMsg = clientLeaveResponse cl ch
+	sendToClient cl responseMsg
+
+clientLeaveResponse :: Client -> Chatroom -> String
+clientLeaveResponse cl ch = "LEFT_CHATROOM: " ++ getRoomName ch ++ "\nJOIN_ID: " ++ show (getClientID cl) ++ "\n\n"
+
+sendPseudoLeaveResponse :: Socket -> String -> String -> IO ()
+sendPseudoLeaveResponse s clId chId = do
+	let responseMsg = clientPseudoLeaveResponse clId chId
+	NSB.send s $ B.pack responseMsg
+	return ()
+
+clientPseudoLeaveResponse :: String -> String -> String
+clientPseudoLeaveResponse clId chId = "LEFT_CHATROOM: " ++ chId ++ "\nJOIN_ID: " ++ clId ++ "\n\n"
+
+sendToClient :: Client -> String -> IO ()
+sendToClient c msg = do
+	NSB.send (getClientSocket c) $ B.pack msg
+	return ()
+
+disconnectClient :: Socket -> IO ()
+disconnectClient s = close s
 
 endThread :: Socket -> MVar Int -> IO ()
 endThread s count = do
