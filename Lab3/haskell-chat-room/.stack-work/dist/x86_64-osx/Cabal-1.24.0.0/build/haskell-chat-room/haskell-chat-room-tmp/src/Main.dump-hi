@@ -1,10 +1,10 @@
 
 ==================== FINAL INTERFACE ====================
-2016-11-22 16:00:39.589587 UTC
+2016-11-22 16:07:49.067577 UTC
 
 interface main@main:Main 8001
-  interface hash: a462c39e384114623da2ffa8c9075d70
-  ABI hash: cec7c704f8c820420485c1515002b3c3
+  interface hash: e907beeecea56a8a293274d66fd37e48
+  ABI hash: 8df1691efd7f4602edaf04106eb0a933
   export-list hash: 1491ddc35b227bb23fa40cd94693a9a4
   orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
   flag hash: 8668484c2415d15fbda37e3f0d670903
@@ -783,7 +783,7 @@ f120ea7ab09b82bdfa8b42f9a2608c93
 23751e39a42d6a03a84bbdf76601749d
   broadcastChat5 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString# "Broadcasting Chat"#) -}
-90f14094694f9ae59f26276531e1e814
+677385ed17ebca48d76ea0d510f93825
   broadcastJoin :: Main.Client -> Main.Chatroom -> GHC.Types.IO ()
   {- Arity: 3,
      Strictness: <L,1*U(A,A,U,A,A)><L,1*U(A,1*U,1*U(U))><S,U>,
@@ -793,7 +793,7 @@ f120ea7ab09b82bdfa8b42f9a2608c93
                 (<Main.Client>_R
                  ->_R <Main.Chatroom>_R
                  ->_R Sym (GHC.Types.N:IO[0] <()>_R)) -}
-15d20731ffabc54a79d36a04cff4723e
+4a43e16cae2e89999122b74312bb2800
   broadcastJoin1 ::
     Main.Client
     -> Main.Chatroom
@@ -960,13 +960,13 @@ e1aed74e4d5e702855f13a77d0c44ad3
   {- Unfolding: (GHC.CString.unpackCString#
                    "\n\
                    \\n"#) -}
-09f8220f74f0e6e685bd03a0f4d8d7ba
+688541edcdce14008c7956fb1d1f33dc
   chatroomJoinBroadcast ::
     Main.Client -> Main.Chatroom -> GHC.Base.String
   {- Arity: 2, Strictness: <L,1*U(A,A,U,A,A)><L,1*U(A,A,1*U(U))>,
      Unfolding: (\ (c :: Main.Client) (chatroom :: Main.Chatroom) ->
                  GHC.CString.unpackAppendCString#
-                   "CHAT: "#
+                   "CHAT:"#
                    (case chatroom of wild { Main.Chatroom ds ds1 rmId ->
                     case rmId of ww2 { GHC.Types.I# ww3 ->
                     case GHC.Show.$wshowSignedInt
@@ -978,14 +978,14 @@ e1aed74e4d5e702855f13a77d0c44ad3
                       (GHC.Types.: @ GHC.Types.Char ww5 ww6)
                       (GHC.CString.unpackAppendCString#
                          "\n\
-                         \CLIENT_NAME: "#
+                         \CLIENT_NAME:"#
                          (case c of wild1 { Main.Client ds2 ds3 name ds4 ds5 ->
                           GHC.Base.++
                             @ GHC.Types.Char
                             name
                             (GHC.CString.unpackAppendCString#
                                "\n\
-                               \MESSAGE: User "#
+                               \MESSAGE:User "#
                                (GHC.Base.++
                                   @ GHC.Types.Char
                                   name
@@ -1349,7 +1349,7 @@ d1bdd15073a4dd742836f20f5427e89f
      Unfolding: InlineRule (1, True, False)
                 (\ (ds :: Main.Client) ->
                  case ds of wild { Main.Client ds1 ds2 ds3 sock ds4 -> sock }) -}
-7d70cf8a5f5a41914ed7707d3a475aad
+c765d17f48fef2f26b9ecc347afcf6f2
   getJoinMesgInfo ::
     GHC.Base.String -> GHC.Types.IO (GHC.Base.String, GHC.Base.String)
   {- Arity: 2, Strictness: <L,1*U><S,U>,
@@ -1359,7 +1359,7 @@ d1bdd15073a4dd742836f20f5427e89f
                 (<GHC.Base.String>_R
                  ->_R Sym (GHC.Types.N:IO[0]
                                <([GHC.Types.Char], [GHC.Types.Char])>_R)) -}
-379cc2abe7475514ae080fa4bdd7cd1b
+49b40759f84878962b5046f715578208
   getJoinMesgInfo1 ::
     GHC.Base.String
     -> GHC.Prim.State# GHC.Prim.RealWorld
@@ -1378,7 +1378,7 @@ d1bdd15073a4dd742836f20f5427e89f
                        (GHC.List.$w!! @ GHC.Base.String mgsLines 0#),
                      Main.$wunsafeDrop4
                        @ GHC.Types.Char
-                       14#
+                       13#
                        (GHC.List.$w!! @ GHC.Base.String mgsLines 3#)) #)) -}
 d4544cbf393acac9037bca18d8e51aed
   getLeaveMessageInfo ::

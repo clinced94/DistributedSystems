@@ -231,7 +231,7 @@ getJoinMesgInfo :: String -> IO (String,String)
 getJoinMesgInfo msg = return (roomName, clientName) where
 	mgsLines = lines msg
 	roomName = drop 15 (mgsLines !! 0)
-	clientName = drop 14 (mgsLines !! 3)
+	clientName = drop 13 (mgsLines !! 3)
 
 sendJoinResponse :: Socket -> Client -> String -> String -> Chatroom -> IO ()
 sendJoinResponse s c serverPort serverIP chatroom = do
@@ -251,7 +251,7 @@ broadcastJoin c ch = do
 	putStrLn "Broadcast sent!"
 
 chatroomJoinBroadcast :: Client -> Chatroom -> String
-chatroomJoinBroadcast c chatroom = "CHAT: " ++ show (getRoomId chatroom) ++ "\nCLIENT_NAME: " ++ (getClientName c) ++ "\nMESSAGE: User " ++ (getClientName c) ++ " has joined.\n\n"
+chatroomJoinBroadcast c chatroom = "CHAT:" ++ show (getRoomId chatroom) ++ "\nCLIENT_NAME:" ++ (getClientName c) ++ "\nMESSAGE:User " ++ (getClientName c) ++ " has joined.\n\n"
 
 leaveChatroom :: Socket -> String -> Forum -> IO ()
 leaveChatroom s msg forumMV = do
