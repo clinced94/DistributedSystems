@@ -1,10 +1,10 @@
 
 ==================== FINAL INTERFACE ====================
-2016-11-22 16:19:07.688894 UTC
+2016-11-22 16:25:39.123832 UTC
 
 interface main@main:Main 8001
-  interface hash: cb91b67ce724a357bb18dc4e055e82b3
-  ABI hash: 54ea8ace6773dd5a1a908cf3377b0f15
+  interface hash: b8ed7f2db49e76919fced52538c0cd95
+  ABI hash: 5bbfd60a5c6b216a3eab6e4f0e6f462f
   export-list hash: 1491ddc35b227bb23fa40cd94693a9a4
   orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
   flag hash: 8668484c2415d15fbda37e3f0d670903
@@ -1780,7 +1780,7 @@ a080a9b8620fe0c425805068ba83990c
     -> GHC.Prim.State# GHC.Prim.RealWorld
     -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
   {- Arity: 2, Strictness: <S,1*U><S,U> -}
-2a5ff37ab94fef6c794ae1679e7fab73
+bc67f8766e2bc5782fc4db70ddfc8293
   receiveMessage ::
     Network.Socket.Types.Socket
     -> GHC.MVar.MVar ()
@@ -1791,7 +1791,7 @@ a080a9b8620fe0c425805068ba83990c
     -> Main.IDGenerator
     -> GHC.Types.IO ()
   {- Arity: 8,
-     Strictness: <L,U(U(U),U,U,U,U(U))><L,1*U(U)><L,1*U><L,1*U><L,U><L,1*U(U)><L,1*U(U)><S,U>,
+     Strictness: <L,U(U(U),U,U,U,U(U))><L,U(U)><L,U><L,U><L,U><L,U(U)><L,U(U)><S,U>,
      Unfolding: InlineRule (0, True, True)
                 Main.receiveMessage1
                   `cast`
@@ -1803,7 +1803,7 @@ a080a9b8620fe0c425805068ba83990c
                  ->_R <Main.Forum>_R
                  ->_R <Main.IDGenerator>_R
                  ->_R Sym (GHC.Types.N:IO[0] <()>_R)) -}
-a5657a7fb0aa1fc3ec7c17b3c6c09ce7
+623a9a0c22258c8d36f3b6a0a0efa670
   receiveMessage1 ::
     Network.Socket.Types.Socket
     -> GHC.MVar.MVar ()
@@ -1815,42 +1815,7 @@ a5657a7fb0aa1fc3ec7c17b3c6c09ce7
     -> GHC.Prim.State# GHC.Prim.RealWorld
     -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
   {- Arity: 8,
-     Strictness: <L,U(U(U),U,U,U,U(U))><L,1*U(U)><L,1*U><L,1*U><L,U><L,1*U(U)><L,1*U(U)><S,U>,
-     Unfolding: (\ (sock :: Network.Socket.Types.Socket)
-                   (killSwitch :: GHC.MVar.MVar ())
-                   (host :: GHC.Base.String)
-                   (port :: GHC.Base.String)
-                   (clientInfo :: GHC.Base.String)
-                   (forum :: Main.Forum)
-                   (gen :: Main.IDGenerator)
-                   (eta :: GHC.Prim.State# GHC.Prim.RealWorld)[OneShot] ->
-                 case Network.Socket.ByteString.$wrecv
-                        sock
-                        4096#
-                        eta of ds1 { (#,#) ipv ipv1 ->
-                 case GHC.IO.Handle.Text.hPutStr2
-                        GHC.IO.Handle.FD.stdout
-                        (GHC.CString.unpackAppendCString#
-                           "Message: "#
-                           (case ipv1 of ww { Data.ByteString.Internal.PS ww1 ww2 ww3 ww4 ->
-                            Data.ByteString.Internal.$wunpackAppendCharsLazy
-                              ww1
-                              ww2
-                              ww3
-                              ww4
-                              (GHC.Types.[] @ GHC.Types.Char) }))
-                        GHC.Types.True
-                        ipv of ds2 { (#,#) ipv2 ipv3 ->
-                 Main.handleMessage1
-                   sock
-                   (Data.ByteString.Internal.unpackChars ipv1)
-                   killSwitch
-                   host
-                   port
-                   clientInfo
-                   forum
-                   gen
-                   ipv2 } }) -}
+     Strictness: <L,U(U(U),U,U,U,U(U))><L,U(U)><L,U><L,U><L,U><L,U(U)><L,U(U)><S,U> -}
 24109e0f4ec3810ec451e17f718b3aad
   removeClient ::
     Main.Client -> GHC.MVar.MVar Main.Chatroom -> GHC.Types.IO ()

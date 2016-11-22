@@ -175,6 +175,7 @@ receiveMessage sock killSwitch host port clientInfo forum gen = do
 	message <- NSB.recv sock 4096
 	System.IO.putStrLn $ "Message: " ++ (B.unpack message)
 	handleMessage sock (B.unpack message) killSwitch host port clientInfo forum gen
+	receiveMessage sock killSwitch host port clientInfo forum gen
 
 handleMessage :: Socket -> String -> MVar () -> String -> String -> String -> Forum -> IDGenerator -> IO ()
 handleMessage s msg killSwitch host port clientInfo forum gen
