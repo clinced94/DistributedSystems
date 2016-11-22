@@ -305,7 +305,7 @@ sendLeaveResponse s cl ch = do
 	return ()
 
 clientLeaveResponse :: Client -> Chatroom -> String
-clientLeaveResponse cl ch = "LEFT_CHATROOM: " ++ getRoomName ch ++ "\nJOIN_ID: " ++ show (getClientID cl) ++ "\n"
+clientLeaveResponse cl ch = "LEFT_CHATROOM: " ++ show (getRoomId ch) ++ "\nJOIN_ID: " ++ show (getClientID cl) ++ "\n"
 
 sendPseudoLeaveResponse :: Socket -> String -> String -> IO ()
 sendPseudoLeaveResponse s clId chId = do
