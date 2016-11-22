@@ -7,6 +7,7 @@ import Network.Socket
 import qualified Network.Socket.ByteString as NSB
 import System.Environment
 import System.IO
+import System.Console.ANSI
 import Data.List
 import Data.String
 import Data.Bool
@@ -129,12 +130,6 @@ removeClient client room = do
 	(Chatroom name clients rmId) <- takeMVar room
 	putMVar room (Chatroom name (clients \\ [client]) rmId)
 
-startswith :: String -> String -> Bool
-startswith [] _ = True
-startswith (x:xs) (y:ys)
-	| x == y = startswith xs ys
-	| otherwise = False
-
 incSocketCount :: MVar Int -> IO ()
 incSocketCount count = do
 	num <- takeMVar count
@@ -165,7 +160,7 @@ server sock killSwitch host port forum gen = do
 serverLoop :: Socket -> MVar () -> String -> String -> Forum -> IDGenerator -> IO ()
 serverLoop sock killSwitch host port forum gen = do
 	(usableSocket,clientInfo) <- accept sock
-	System.IO.putStrLn $ "Connection from: " ++ (show clientInfo)
+	putStrLn $ "[LOG] Connection from:\n" ++ (show clientInfo)
 	forkIO (receiveMessage usableSocket killSwitch host port (show clientInfo) forum gen)
 	--_ <- forkFinally (receiveMessage usableSocket count killSwitch host port) (\_ -> endThread usableSocket count)
 	serverLoop sock killSwitch host port forum gen
@@ -173,29 +168,36 @@ serverLoop sock killSwitch host port forum gen = do
 receiveMessage :: Socket -> MVar () -> String -> String -> String -> Forum -> IDGenerator -> IO ()
 receiveMessage sock killSwitch host port clientInfo forum gen = do
 	message <- NSB.recv sock 4096
-	System.IO.putStrLn $ "Message: " ++ (B.unpack message)
+	setSGR [SetColor Foreground Vivid Cyan]
+	putStrLn $ "[LOG] Message:\n" ++ (B.unpack message)
+	setSGR [Reset]
 	handleMessage sock (B.unpack message) killSwitch host port clientInfo forum gen
-	receiveMessage sock killSwitch host port clientInfo forum gen
 
 handleMessage :: Socket -> String -> MVar () -> String -> String -> String -> Forum -> IDGenerator -> IO ()
 handleMessage s msg killSwitch host port clientInfo forum gen
-	| startswith "JOIN_CHATROOM" msg = enterChatroom s msg host port clientInfo forum gen
-	| startswith "LEAVE_CHATROOM" msg = leaveChatroom s msg forum
-	| startswith "DISCONNECT" msg = disconnectClient s
-	| startswith "HELO" msg	= do
-		System.IO.putStrLn "Dealing with message"
+	| isPrefixOf "JOIN_CHATROOM" msg = do
+		enterChatroom s msg host port clientInfo forum gen
+		receiveMessage s killSwitch host port clientInfo forum gen
+	| isPrefixOf "LEAVE_CHATROOM" msg = do
+		leaveChatroom s msg forum
+		receiveMessage s killSwitch host port clientInfo forum gen
+	| isPrefixOf "DISCONNECT" msg = do
+		disconnectClient s
+	| isPrefixOf "HELO" msg	= do
+		putStrLn "Dealing with message"
 		NSB.send s (B.pack $ msg ++ "IP:" ++ host ++ "\nPort:" ++ port ++"\nStudentID:13320590\n")
-		System.IO.putStrLn "Response sent"
-		return ()
-	| startswith "KILL_SERVICE" msg	= do
-		System.IO.putStrLn "Killswitch Active"
+		putStrLn "Response sent"
+		receiveMessage s killSwitch host port clientInfo forum gen
+	| isPrefixOf "KILL_SERVICE" msg	= do
+		putStrLn "Killswitch Active"
 		putMVar killSwitch ()
 	| otherwise = do
-		System.IO.putStrLn "Nothing is being done"
-		return ()
+		putStrLn "Nothing is being done"
+		receiveMessage s killSwitch host port clientInfo forum gen
 
 enterChatroom :: Socket -> String -> String -> String -> String -> Forum -> IDGenerator -> IO ()
 enterChatroom s msg host port clientInfo forum gen = do
+	putStrLn "Getting Join Message"
 	(roomName, clientName) <- getJoinMesgInfo msg
 	chats <- takeMVar forum
 	let clientIp = takeWhile (/= ':') clientInfo
@@ -229,7 +231,9 @@ printAllChatrooms (room:rooms) = do
 	printAllChatrooms rooms
 
 getJoinMesgInfo :: String -> IO (String,String)
-getJoinMesgInfo msg = return (roomName, clientName) where
+getJoinMesgInfo msg = do
+	putStrLn msg
+	return (roomName, clientName) where
 	mgsLines = lines msg
 	roomName = drop 15 (mgsLines !! 0)
 	clientName = drop 13 (mgsLines !! 3)
@@ -256,6 +260,7 @@ chatroomJoinBroadcast c chatroom = "CHAT:" ++ show (getRoomId chatroom) ++ "\nCL
 
 leaveChatroom :: Socket -> String -> Forum -> IO ()
 leaveChatroom s msg forumMV = do
+	putStrLn "Getting Leave Message"
 	let (chatroomID, clientID, clientName) = getLeaveMessageInfo msg
 	forum <- takeMVar forumMV
 	maybeChatroomMV <- getChatroomByID (read chatroomID) forum
@@ -318,6 +323,7 @@ clientPseudoLeaveResponse clId chId = "LEFT_CHATROOM: " ++ chId ++ "\nJOIN_ID: "
 
 chatToRoom :: Socket -> String -> Forum -> IO ()
 chatToRoom s msg forumMV = do
+	putStrLn "Getting Chat Message Info"
 	let (roomId, clientId, clientName, message) = getChatMessageInfo msg
 	forum <- takeMVar forumMV
 	maybeChatroomMV <- getChatroomByID (read roomId) forum
