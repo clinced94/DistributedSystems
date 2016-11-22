@@ -267,7 +267,7 @@ leaveChatroom s msg forumMV = do
 				then do
 					putStrLn "Both room and client are present"
 					broadcastLeave (fromJust maybeClient) chatroom
-					sendLeaveResponse (fromJust maybeClient) chatroom
+					sendLeaveResponse s (fromJust maybeClient) chatroom
 					putMVar chatroomMV (Chatroom (getRoomName chatroom) ((getRoomClients chatroom) \\ [(fromJust maybeClient)]) (getRoomId chatroom))
 					putMVar forumMV forum
 					else do
@@ -296,10 +296,12 @@ broadcastLeave cl ch = do
 chatroomLeaveBroadcast :: Client -> String
 chatroomLeaveBroadcast cl = "User " ++ (getClientName cl) ++ " has left the room."
 
-sendLeaveResponse :: Client -> Chatroom -> IO ()
-sendLeaveResponse cl ch = do
+sendLeaveResponse :: Socket -> Client -> Chatroom -> IO ()
+sendLeaveResponse s cl ch = do
 	let responseMsg = clientLeaveResponse cl ch
-	sendToClient cl responseMsg
+	putStrLn $ "Response:\n" ++ responseMsg
+	NSB.send s $ B.pack responseMsg
+	return ()
 
 clientLeaveResponse :: Client -> Chatroom -> String
 clientLeaveResponse cl ch = "LEFT_CHATROOM: " ++ getRoomName ch ++ "\nJOIN_ID: " ++ show (getClientID cl) ++ "\n"
