@@ -1,10 +1,10 @@
 
 ==================== FINAL INTERFACE ====================
-2016-11-22 20:10:37.265516 UTC
+2016-11-22 20:13:36.768348 UTC
 
 interface main@main:Main 8001
-  interface hash: fbe7f46a7b68a7062a06e63cc13b50fd
-  ABI hash: 9831fd8e552e46121744b28569b38430
+  interface hash: 98637ca45c2bd584173ac8233a1e6c93
+  ABI hash: e907563a07e51b5cc54053517533734c
   export-list hash: 658e80080cbb66869483c4cbf4ca5b77
   orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
   flag hash: 8668484c2415d15fbda37e3f0d670903
@@ -833,24 +833,24 @@ fe800181d9e42a8dcf97b250b62adfb8
 7f7ae5ad45486ce1e607ee3864c91610
   broadcastJoin3 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString# "Broadcasting..."#) -}
-f237278b31fe69e386ba8e887173b313
+7a6db1aaaaaa0720e433fa165281b0a9
   broadcastLeave :: Main.Client -> Main.Chatroom -> GHC.Types.IO ()
   {- Arity: 3,
-     Strictness: <L,1*U(A,A,U,A,A)><L,U(A,1*U,1*U(U))><S,U>,
+     Strictness: <L,1*U(A,A,U,A,A)><L,U(1*U,1*U,1*U(U))><S,U>,
      Unfolding: InlineRule (0, True, True)
                 Main.broadcastLeave1
                   `cast`
                 (<Main.Client>_R
                  ->_R <Main.Chatroom>_R
                  ->_R Sym (GHC.Types.N:IO[0] <()>_R)) -}
-e12e55f4682bcf3973206d8e090fc7ed
+bb339c02a8da46fb6616422c6f64f86d
   broadcastLeave1 ::
     Main.Client
     -> Main.Chatroom
     -> GHC.Prim.State# GHC.Prim.RealWorld
     -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
   {- Arity: 3,
-     Strictness: <L,1*U(A,A,U,A,A)><L,U(A,1*U,1*U(U))><S,U>,
+     Strictness: <L,1*U(A,A,U,A,A)><L,U(1*U,1*U,1*U(U))><S,U>,
      Unfolding: (\ (cl :: Main.Client)
                    (ch :: Main.Chatroom)
                    (eta :: GHC.Prim.State# GHC.Prim.RealWorld)[OneShot] ->
@@ -903,11 +903,11 @@ e12e55f4682bcf3973206d8e090fc7ed
   broadcastLeave3 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString#
                    "Broadcasting leave:"#) -}
-c81398a1995416abc3d916d42dfe325a
+68e53bc71a8f5e4218987768a32c1812
   broadcastPseudoLeave ::
     GHC.Base.String
     -> GHC.Base.String -> Main.Chatroom -> GHC.Types.IO ()
-  {- Arity: 4, Strictness: <L,1*U><L,1*U><L,U(A,1*U,1*U(U))><S,U>,
+  {- Arity: 4, Strictness: <L,1*U><L,1*U><L,U(1*U,1*U,1*U(U))><S,U>,
      Unfolding: InlineRule (0, True, True)
                 Main.broadcastPseudoLeave1
                   `cast`
@@ -915,14 +915,14 @@ c81398a1995416abc3d916d42dfe325a
                  ->_R <GHC.Base.String>_R
                  ->_R <Main.Chatroom>_R
                  ->_R Sym (GHC.Types.N:IO[0] <()>_R)) -}
-f240bd6225aa5c12a7cdf9a20253bf10
+406314b96f74744b9063214070151876
   broadcastPseudoLeave1 ::
     GHC.Base.String
     -> GHC.Base.String
     -> Main.Chatroom
     -> GHC.Prim.State# GHC.Prim.RealWorld
     -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
-  {- Arity: 4, Strictness: <L,1*U><L,1*U><L,U(A,1*U,1*U(U))><S,U>,
+  {- Arity: 4, Strictness: <L,1*U><L,1*U><L,U(1*U,1*U,1*U(U))><S,U>,
      Unfolding: (\ (clId :: GHC.Base.String)
                    (clNm :: GHC.Base.String)
                    (ch :: Main.Chatroom)
@@ -1128,10 +1128,10 @@ fab3fbaa9b81f926d211924befcb9129
   {- Unfolding: (GHC.CString.unpackCString#
                    " has joined.\n\
                    \\n"#) -}
-33b0c4771da274efcd8210d53bdd3706
+a38337588c205c3c2b2b8c10e64c07d7
   chatroomLeaveBroadcast ::
     Main.Client -> Main.Chatroom -> GHC.Base.String
-  {- Arity: 2, Strictness: <L,1*U(A,A,U,A,A)><L,1*U(A,A,1*U(U))>,
+  {- Arity: 2, Strictness: <L,1*U(A,A,U,A,A)><L,1*U(1*U,A,1*U(U))>,
      Unfolding: (\ (cl :: Main.Client) (ch :: Main.Chatroom) ->
                  GHC.CString.unpackAppendCString#
                    "CHAT: "#
@@ -1157,17 +1157,22 @@ fab3fbaa9b81f926d211924befcb9129
                                (GHC.Base.++
                                   @ GHC.Types.Char
                                   name
-                                  Main.chatroomLeaveBroadcast1)) })) } } })) -}
-4ec120833cf220449afd515b18bca03e
+                                  (GHC.CString.unpackAppendCString#
+                                     " has left "#
+                                     (GHC.Base.++
+                                        @ GHC.Types.Char
+                                        ds
+                                        Main.chatroomLeaveBroadcast1)))) })) } } })) -}
+d7fca51b86685c349515f53a77f7228a
   chatroomLeaveBroadcast1 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString#
-                   " has left the room.\n\
+                   ".\n\
                    \\n"#) -}
-aaf7a3b4d98c4fca0904bb1b40d2f226
+20ab89e46f3d3a78558db6ce976b9262
   chatroomPseudoLeaveBroadcast ::
     GHC.Base.String
     -> GHC.Base.String -> Main.Chatroom -> GHC.Base.String
-  {- Arity: 3, Strictness: <L,1*U><L,1*U><L,1*U(A,A,1*U(U))>,
+  {- Arity: 3, Strictness: <L,1*U><L,1*U><L,1*U(1*U,A,1*U(U))>,
      Unfolding: (\ (clId :: GHC.Base.String)
                    (clNm :: GHC.Base.String)
                    (ch :: Main.Chatroom) ->
@@ -1194,7 +1199,12 @@ aaf7a3b4d98c4fca0904bb1b40d2f226
                                (GHC.Base.++
                                   @ GHC.Types.Char
                                   clId
-                                  Main.chatroomLeaveBroadcast1)))) } } })) -}
+                                  (GHC.CString.unpackAppendCString#
+                                     " has left "#
+                                     (GHC.Base.++
+                                        @ GHC.Types.Char
+                                        ds
+                                        Main.chatroomLeaveBroadcast1)))))) } } })) -}
 59b5fa93876598aed908346430caf815
   clientJoinResponse ::
     Main.Client
