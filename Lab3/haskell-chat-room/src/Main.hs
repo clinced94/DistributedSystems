@@ -241,7 +241,7 @@ sendJoinResponse s c serverPort serverIP chatroom = do
 	return ()
 
 clientJoinResponse :: Client -> String -> String -> Chatroom -> String
-clientJoinResponse c serverIP serverPort chatroom = "JOINED_CHATROOM: " ++ (getRoomName chatroom) ++ "\nSERVER_IP: " ++ serverIP ++ "\nPORT: " ++ serverPort ++ "\nROOM_REF: " ++ show (getRoomId chatroom) ++ "\nJOIN_ID: " ++ show (getClientID c) ++ "\n\n"
+clientJoinResponse c serverIP serverPort chatroom = "JOINED_CHATROOM: " ++ (getRoomName chatroom) ++ "\nSERVER_IP: " ++ serverIP ++ "\nPORT: " ++ serverPort ++ "\nROOM_REF: " ++ show (getRoomId chatroom) ++ "\nJOIN_ID: " ++ show (getClientID c) ++ "\n"
 
 broadcastJoin :: Client -> Chatroom -> IO ()
 broadcastJoin c ch = do
