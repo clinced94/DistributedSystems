@@ -11,7 +11,7 @@ server (i.e. "Moo").
 
 To run the client script, type "python client.py" into the console.
 
-##Lab 2 Instructions
+##Lab 2 & 3 Instructions
 Run the server by running the "run.sh" file with two arguments. The first being the IP address of the server, and the second being the port number. For example:
 ```sh
 $ ./run.sh 10.62.0.106 7000
