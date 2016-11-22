@@ -290,7 +290,7 @@ leaveChatroom s msg forumMV = do
 						setSGR [SetColor Foreground Vivid Green]
 						sendPseudoLeaveResponse s clientID chatroomID
 						setSGR [SetColor Foreground Dull Magenta]
-						broadcastLeave (fromJust maybeClient) chatroom
+						broadcastPseudoLeave clientID chatroom
 						setSGR [Reset]
 						putMVar forumMV forum
 				else do
@@ -310,6 +310,14 @@ getLeaveMessageInfo msg = (chId, clId, clNm) where
 broadcastLeave :: Client -> Chatroom -> IO ()
 broadcastLeave cl ch = do
 	let broadcastMsg = chatroomLeaveBroadcast cl ch
+	putStrLn "Broadcasting leave:"
+	putStrLn broadcastMsg
+	head $ map (\x -> NSB.send (getClientSocket x) $ B.pack broadcastMsg) (getRoomClients ch)
+	putStrLn "Leave broadcast sent!"
+
+broadcastPseudoLeave :: String -> Chatroom -> IO ()
+broadcastPseudoLeave clId ch = do 
+	let broadcastMsg = clientPseudoLeaveResponse clId $ show (getRoomId ch)
 	putStrLn "Broadcasting leave:"
 	putStrLn broadcastMsg
 	head $ map (\x -> NSB.send (getClientSocket x) $ B.pack broadcastMsg) (getRoomClients ch)
