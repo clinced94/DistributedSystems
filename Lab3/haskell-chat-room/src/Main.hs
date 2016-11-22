@@ -209,16 +209,22 @@ enterChatroom s msg host port clientInfo forum gen = do
 		then do
 			addClient newClient (fromJust foundRoom)
 			chatroom <- takeMVar (fromJust foundRoom)
+			setSGR [SetColor Foreground Vivid Green]
 			sendJoinResponse s newClient port host chatroom
+			setSGR [SetColor Foreground Dull Magenta]
 			broadcastJoin newClient chatroom
+			setSGR [Reset]
 			putMVar (fromJust foundRoom) chatroom
 			putMVar forum chats
 			else do
 				newChatroom <- createChatroom roomName gen
 				addClient newClient newChatroom
 				newChat <- takeMVar newChatroom
+				setSGR [SetColor Foreground Vivid Green]
 				sendJoinResponse s newClient port host newChat
+				setSGR [SetColor Foreground Dull Magenta]
 				broadcastJoin newClient newChat
+				setSGR [Reset]
 				putMVar newChatroom newChat
 				putMVar forum (chats ++ [newChatroom])
 
@@ -272,17 +278,24 @@ leaveChatroom s msg forumMV = do
 			if isJust maybeClient
 				then do
 					putStrLn "Both room and client are present"
+					setSGR [SetColor Foreground Vivid Green]
 					sendLeaveResponse s (fromJust maybeClient) chatroom
+					setSGR [SetColor Foreground Dull Magenta]
 					broadcastLeave (fromJust maybeClient) chatroom
+					setSGR [Reset]
 					putMVar chatroomMV (Chatroom (getRoomName chatroom) ((getRoomClients chatroom) \\ [(fromJust maybeClient)]) (getRoomId chatroom))
 					putMVar forumMV forum
 					else do
 						putStrLn "Room is present"
+						setSGR [SetColor Foreground Vivid Green]
 						sendPseudoLeaveResponse s clientID chatroomID
+						setSGR [Reset]
 						putMVar forumMV forum
 				else do
 					putStrLn "Room is not present"
+					setSGR [SetColor Foreground Vivid Green]
 					sendPseudoLeaveResponse s clientID chatroomID
+					setSGR [Reset]
 					putMVar forumMV forum
 
 getLeaveMessageInfo :: String -> (String, String, String)
@@ -294,13 +307,14 @@ getLeaveMessageInfo msg = (chId, clId, clNm) where
 
 broadcastLeave :: Client -> Chatroom -> IO ()
 broadcastLeave cl ch = do
-	let broadcastMsg = chatroomLeaveBroadcast cl
-	putStrLn "Broadcasting leave"
+	let broadcastMsg = chatroomLeaveBroadcast cl ch
+	putStrLn "Broadcasting leave:"
+	putStrLn broadcastMsg
 	head $ map (\x -> NSB.send (getClientSocket x) $ B.pack broadcastMsg) (getRoomClients ch)
 	putStrLn "Leave broadcast sent!"
 
-chatroomLeaveBroadcast :: Client -> String
-chatroomLeaveBroadcast cl = "User " ++ (getClientName cl) ++ " has left the room."
+chatroomLeaveBroadcast :: Client -> Chatroom -> String
+chatroomLeaveBroadcast cl ch = "CHAT: " ++ show (getRoomId ch) ++ "\nCLIENT_NAME: " ++ (getClientName cl) ++ "\nMESSAGE: " ++ (getClientName cl) ++ " has left the room.\n\n"
 
 sendLeaveResponse :: Socket -> Client -> Chatroom -> IO ()
 sendLeaveResponse s cl ch = do
@@ -334,7 +348,9 @@ chatToRoom s msg forumMV = do
 			let maybeClient = getClientByID (read clientId) $ getRoomClients chatroom
 			if isJust maybeClient
 				then do
+					setSGR [SetColor Foreground Dull Magenta]
 					broadcastChat roomId clientName message chatroom
+					setSGR [Reset]
 					putMVar chatroomMV (Chatroom (getRoomName chatroom) ((getRoomClients chatroom) \\ [(fromJust maybeClient)]) (getRoomId chatroom))
 					putMVar forumMV forum
 					else do
@@ -352,7 +368,7 @@ getChatMessageInfo msg = (roomId, clientId, clientName, message) where
 
 sendToClient :: Client -> String -> IO ()
 sendToClient c msg = do
-	putStrLn $ "Sending to client: " ++ msg
+	putStrLn $ "Sending to client:\n" ++ msg
 	NSB.send (getClientSocket c) $ B.pack msg
 	return ()
 
