@@ -291,7 +291,7 @@ broadcastLeave :: Client -> Chatroom -> IO ()
 broadcastLeave cl ch = do
 	let broadcastMsg = chatroomLeaveBroadcast cl
 	putStrLn "Broadcasting leave"
-	head $ map (\x -> sendToClient x broadcastMsg) (getRoomClients ch)
+	head $ map (\x -> NSB.send (getClientSocket x) $ B.pack broadcastMsg) (getRoomClients ch)
 	putStrLn "Leave broadcast sent!"
 
 chatroomLeaveBroadcast :: Client -> String
