@@ -325,7 +325,7 @@ broadcastPseudoLeave clId clNm ch = do
 	putStrLn "Leave broadcast sent!"
 
 chatroomLeaveBroadcast :: Client -> Chatroom -> String
-chatroomLeaveBroadcast cl ch = "CHAT: " ++ show (getRoomId ch) ++ "\nCLIENT_NAME: " ++ (getClientName cl) ++ "\nMESSAGE: " ++ (getClientName cl) ++ " has left " ++ (getRoomName ch) ++ ".\n\n"
+chatroomLeaveBroadcast cl ch = "CHAT: " ++ show (getRoomId ch) ++ "\nCLIENT_NAME:" ++ (getClientName cl) ++ "\nMESSAGE:" ++ (getClientName cl) ++ " has left " ++ (getRoomName ch) ++ ".\n\n"
 
 sendLeaveResponse :: Socket -> Client -> Chatroom -> IO ()
 sendLeaveResponse s cl ch = do
@@ -347,7 +347,7 @@ clientPseudoLeaveResponse :: String -> String -> String
 clientPseudoLeaveResponse clId chId = "LEFT_CHATROOM: " ++ chId ++ "\nJOIN_ID: " ++ clId ++ "\n"
 
 chatroomPseudoLeaveBroadcast :: String -> String -> Chatroom -> String
-chatroomPseudoLeaveBroadcast clId clNm ch = "CHAT: " ++ show (getRoomId ch) ++ "\nCLIENT_NAME: " ++ clNm ++ "\nMESSAGE: " ++ clId ++ " has left " ++ (getRoomName ch) ++ ".\n\n"
+chatroomPseudoLeaveBroadcast clId clNm ch = "CHAT:" ++ show (getRoomId ch) ++ "\nCLIENT_NAME:" ++ clNm ++ "\nMESSAGE:" ++ clId ++ " has left " ++ (getRoomName ch) ++ ".\n\n"
 
 chatToRoom :: Socket -> String -> Forum -> IO ()
 chatToRoom s msg forumMV = do
