@@ -267,8 +267,8 @@ leaveChatroom s msg forumMV = do
 			if isJust maybeClient
 				then do
 					putStrLn "Both room and client are present"
-					broadcastLeave (fromJust maybeClient) chatroom
 					sendLeaveResponse s (fromJust maybeClient) chatroom
+					broadcastLeave (fromJust maybeClient) chatroom
 					putMVar chatroomMV (Chatroom (getRoomName chatroom) ((getRoomClients chatroom) \\ [(fromJust maybeClient)]) (getRoomId chatroom))
 					putMVar forumMV forum
 					else do
