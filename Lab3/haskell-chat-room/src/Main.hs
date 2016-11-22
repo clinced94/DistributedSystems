@@ -194,7 +194,7 @@ handleMessage s msg killSwitch host port clientInfo forum gen
 		return ()
 
 enterChatroom :: Socket -> String -> String -> String -> String -> Forum -> IDGenerator -> IO ()
-enterChatroom s msg port host clientInfo forum gen = do
+enterChatroom s msg host port clientInfo forum gen = do
 	(roomName, clientName) <- getJoinMesgInfo msg
 	chats <- takeMVar forum
 	let clientIp = takeWhile (/= ':') clientInfo
@@ -206,9 +206,6 @@ enterChatroom s msg port host clientInfo forum gen = do
 		then do
 			addClient newClient (fromJust foundRoom)
 			chatroom <- takeMVar (fromJust foundRoom)
-			putStrLn "Join Response"
-			putStrLn port
-			putStrLn host
 			sendJoinResponse s newClient port host chatroom
 			broadcastJoin newClient chatroom
 			putMVar (fromJust foundRoom) chatroom
@@ -217,9 +214,6 @@ enterChatroom s msg port host clientInfo forum gen = do
 				newChatroom <- createChatroom roomName gen
 				addClient newClient newChatroom
 				newChat <- takeMVar newChatroom
-				putStrLn "Join Response"
-				putStrLn port
-				putStrLn host
 				sendJoinResponse s newClient port host newChat
 				broadcastJoin newClient newChat
 				putMVar newChatroom newChat
@@ -271,14 +265,17 @@ leaveChatroom s msg forumMV = do
 			let maybeClient = getClientByID (read clientID) $ getRoomClients chatroom
 			if isJust maybeClient
 				then do
+					putStrLn "Both room and client are present"
 					broadcastLeave (fromJust maybeClient) chatroom
 					sendLeaveResponse (fromJust maybeClient) chatroom
 					putMVar chatroomMV (Chatroom (getRoomName chatroom) ((getRoomClients chatroom) \\ [(fromJust maybeClient)]) (getRoomId chatroom))
 					putMVar forumMV forum
 					else do
+						putStrLn "Room is present"
 						sendPseudoLeaveResponse s clientID chatroomID
 						putMVar forumMV forum
 				else do
+					putStrLn "Room is not present"
 					sendPseudoLeaveResponse s clientID chatroomID
 					putMVar forumMV forum
 
@@ -346,6 +343,7 @@ getChatMessageInfo msg = (roomId, clientId, clientName, message) where
 
 sendToClient :: Client -> String -> IO ()
 sendToClient c msg = do
+	putStrLn $ "Sending to client: " ++ msg
 	NSB.send (getClientSocket c) $ B.pack msg
 	return ()
 
