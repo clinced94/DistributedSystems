@@ -1,10 +1,10 @@
 
 ==================== FINAL INTERFACE ====================
-2016-11-22 15:28:44.209277 UTC
+2016-11-22 16:00:39.589587 UTC
 
 interface main@main:Main 8001
-  interface hash: 6c942d4b6775f40fa92b5565ba91914e
-  ABI hash: 79baae1499bbd6bd516f0f89db5832ec
+  interface hash: a462c39e384114623da2ffa8c9075d70
+  ABI hash: cec7c704f8c820420485c1515002b3c3
   export-list hash: 1491ddc35b227bb23fa40cd94693a9a4
   orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
   flag hash: 8668484c2415d15fbda37e3f0d670903
@@ -783,24 +783,24 @@ f120ea7ab09b82bdfa8b42f9a2608c93
 23751e39a42d6a03a84bbdf76601749d
   broadcastChat5 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString# "Broadcasting Chat"#) -}
-af28425ba48c0ae94c79127b5bed1812
+90f14094694f9ae59f26276531e1e814
   broadcastJoin :: Main.Client -> Main.Chatroom -> GHC.Types.IO ()
   {- Arity: 3,
-     Strictness: <L,1*U(A,A,1*U,A,A)><L,1*U(1*U,1*U,A)><S,U>,
+     Strictness: <L,1*U(A,A,U,A,A)><L,1*U(A,1*U,1*U(U))><S,U>,
      Unfolding: InlineRule (0, True, True)
                 Main.broadcastJoin1
                   `cast`
                 (<Main.Client>_R
                  ->_R <Main.Chatroom>_R
                  ->_R Sym (GHC.Types.N:IO[0] <()>_R)) -}
-fd1864c0232d6af42302229a5d3c52fa
+15d20731ffabc54a79d36a04cff4723e
   broadcastJoin1 ::
     Main.Client
     -> Main.Chatroom
     -> GHC.Prim.State# GHC.Prim.RealWorld
     -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
   {- Arity: 3,
-     Strictness: <L,1*U(A,A,1*U,A,A)><L,1*U(1*U,1*U,A)><S,U>,
+     Strictness: <L,1*U(A,A,U,A,A)><L,1*U(A,1*U,1*U(U))><S,U>,
      Unfolding: (\ (c :: Main.Client)
                    (ch :: Main.Chatroom)
                    (eta :: GHC.Prim.State# GHC.Prim.RealWorld)[OneShot] ->
@@ -960,28 +960,40 @@ e1aed74e4d5e702855f13a77d0c44ad3
   {- Unfolding: (GHC.CString.unpackCString#
                    "\n\
                    \\n"#) -}
-93010d255fdc18d7a65b031381a834f2
+09f8220f74f0e6e685bd03a0f4d8d7ba
   chatroomJoinBroadcast ::
     Main.Client -> Main.Chatroom -> GHC.Base.String
-  {- Arity: 2, Strictness: <L,1*U(A,A,1*U,A,A)><L,1*U(1*U,A,A)>,
+  {- Arity: 2, Strictness: <L,1*U(A,A,U,A,A)><L,1*U(A,A,1*U(U))>,
      Unfolding: (\ (c :: Main.Client) (chatroom :: Main.Chatroom) ->
                  GHC.CString.unpackAppendCString#
-                   "User "#
-                   (case c of wild { Main.Client ds ds1 name ds2 ds3 ->
+                   "CHAT: "#
+                   (case chatroom of wild { Main.Chatroom ds ds1 rmId ->
+                    case rmId of ww2 { GHC.Types.I# ww3 ->
+                    case GHC.Show.$wshowSignedInt
+                           0#
+                           ww3
+                           (GHC.Types.[] @ GHC.Types.Char) of ww4 { (#,#) ww5 ww6 ->
                     GHC.Base.++
                       @ GHC.Types.Char
-                      name
+                      (GHC.Types.: @ GHC.Types.Char ww5 ww6)
                       (GHC.CString.unpackAppendCString#
-                         " has joined chatroom "#
-                         (case chatroom of wild1 { Main.Chatroom name1 ds4 ds5 ->
+                         "\n\
+                         \CLIENT_NAME: "#
+                         (case c of wild1 { Main.Client ds2 ds3 name ds4 ds5 ->
                           GHC.Base.++
                             @ GHC.Types.Char
-                            name1
-                            Main.chatroomJoinBroadcast1 })) })) -}
-c381137589d4f808e1b4185c46b7b816
+                            name
+                            (GHC.CString.unpackAppendCString#
+                               "\n\
+                               \MESSAGE: User "#
+                               (GHC.Base.++
+                                  @ GHC.Types.Char
+                                  name
+                                  Main.chatroomJoinBroadcast1)) })) } } })) -}
+207930330fbfc71978966fed236dcb4a
   chatroomJoinBroadcast1 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString#
-                   ".\n\
+                   " has joined.\n\
                    \\n"#) -}
 662843e12dd7527583b90756866eb67b
   chatroomLeaveBroadcast :: Main.Client -> GHC.Base.String
