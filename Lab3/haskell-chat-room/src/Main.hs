@@ -347,7 +347,7 @@ clientPseudoLeaveResponse :: String -> String -> String
 clientPseudoLeaveResponse clId chId = "LEFT_CHATROOM: " ++ chId ++ "\nJOIN_ID: " ++ clId ++ "\n"
 
 chatroomPseudoLeaveBroadcast :: String -> String -> Chatroom -> String
-chatroomPseudoLeaveBroadcast clId clNm ch = "CHAT:" ++ show (getRoomId ch) ++ "\nCLIENT_NAME:" ++ clNm ++ "\nMESSAGE:" ++ clId ++ " has left " ++ (getRoomName ch) ++ ".\n\n"
+chatroomPseudoLeaveBroadcast clId clNm ch = "CHAT:" ++ show (getRoomId ch) ++ "\nCLIENT_NAME:" ++ clNm ++ "\nMESSAGE:" ++ clNm ++ " has left " ++ (getRoomName ch) ++ ".\n\n"
 
 chatToRoom :: Socket -> String -> Forum -> IO ()
 chatToRoom s msg forumMV = do
