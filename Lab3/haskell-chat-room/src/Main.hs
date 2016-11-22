@@ -251,7 +251,7 @@ broadcastJoin c ch = do
 	putStrLn "Broadcast sent!"
 
 chatroomJoinBroadcast :: Client -> Chatroom -> String
-chatroomJoinBroadcast c chatroom = "User " ++ (getClientName c) ++ " has joined chatroom " ++ (getRoomName chatroom) ++ ".\n\n"
+chatroomJoinBroadcast c chatroom = "CHAT: " ++ (getRoomId chatroom) ++ "\nCLIENT_NAME: " ++ (getClientName c) ++ "\nMESSAGE: User " ++ (getClientName c) ++ " has joined.\n\n"
 
 leaveChatroom :: Socket -> String -> Forum -> IO ()
 leaveChatroom s msg forumMV = do
