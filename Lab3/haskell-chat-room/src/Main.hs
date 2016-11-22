@@ -167,6 +167,7 @@ serverLoop sock killSwitch host port forum gen = do
 
 receiveMessage :: Socket -> MVar () -> String -> String -> String -> Forum -> IDGenerator -> IO ()
 receiveMessage sock killSwitch host port clientInfo forum gen = do
+	setSGR [Reset]
 	message <- NSB.recv sock 4096
 	setSGR [SetColor Foreground Vivid Cyan]
 	putStrLn $ "[LOG] Message:\n" ++ (B.unpack message)
@@ -290,7 +291,7 @@ leaveChatroom s msg forumMV = do
 						setSGR [SetColor Foreground Vivid Green]
 						sendPseudoLeaveResponse s clientID chatroomID
 						setSGR [SetColor Foreground Dull Magenta]
-						broadcastPseudoLeave clientID chatroom
+						broadcastPseudoLeave clientID clientName chatroom
 						setSGR [Reset]
 						putMVar forumMV forum
 				else do
@@ -315,9 +316,9 @@ broadcastLeave cl ch = do
 	head $ map (\x -> NSB.send (getClientSocket x) $ B.pack broadcastMsg) (getRoomClients ch)
 	putStrLn "Leave broadcast sent!"
 
-broadcastPseudoLeave :: String -> Chatroom -> IO ()
-broadcastPseudoLeave clId ch = do 
-	let broadcastMsg = clientPseudoLeaveResponse clId $ show (getRoomId ch)
+broadcastPseudoLeave :: String -> String -> Chatroom -> IO ()
+broadcastPseudoLeave clId clNm ch = do
+	let broadcastMsg = chatroomPseudoLeaveBroadcast clId clNm ch
 	putStrLn "Broadcasting leave:"
 	putStrLn broadcastMsg
 	head $ map (\x -> NSB.send (getClientSocket x) $ B.pack broadcastMsg) (getRoomClients ch)
@@ -344,6 +345,9 @@ sendPseudoLeaveResponse s clId chId = do
 
 clientPseudoLeaveResponse :: String -> String -> String
 clientPseudoLeaveResponse clId chId = "LEFT_CHATROOM: " ++ chId ++ "\nJOIN_ID: " ++ clId ++ "\n"
+
+chatroomPseudoLeaveBroadcast :: String -> String -> Chatroom -> String
+chatroomPseudoLeaveBroadcast clId clNm ch = "CHAT: " ++ show (getRoomId ch) ++ "\nCLIENT_NAME: " ++ clNm ++ "\nMESSAGE: " ++ clId ++ " has left the room.\n\n"
 
 chatToRoom :: Socket -> String -> Forum -> IO ()
 chatToRoom s msg forumMV = do
