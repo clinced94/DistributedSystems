@@ -212,7 +212,7 @@ enterChatroom s msg host port clientInfo forum gen = do
 			chatroom <- takeMVar (fromJust foundRoom)
 			setSGR [SetColor Foreground Vivid Green]
 			sendJoinResponse s newClient port host chatroom
-			setSGR [SetColor Foreground Dull Magenta]
+			setSGR [SetColor Foreground Dull Red]
 			broadcastJoin newClient chatroom
 			setSGR [Reset]
 			putMVar (fromJust foundRoom) chatroom
@@ -223,7 +223,7 @@ enterChatroom s msg host port clientInfo forum gen = do
 				newChat <- takeMVar newChatroom
 				setSGR [SetColor Foreground Vivid Green]
 				sendJoinResponse s newClient port host newChat
-				setSGR [SetColor Foreground Dull Magenta]
+				setSGR [SetColor Foreground Dull Red]
 				broadcastJoin newClient newChat
 				setSGR [Reset]
 				putMVar newChatroom newChat
@@ -281,7 +281,7 @@ leaveChatroom s msg forumMV = do
 					putStrLn "Both room and client are present"
 					setSGR [SetColor Foreground Vivid Green]
 					sendLeaveResponse s (fromJust maybeClient) chatroom
-					setSGR [SetColor Foreground Dull Magenta]
+					setSGR [SetColor Foreground Dull Red]
 					broadcastLeave (fromJust maybeClient) chatroom
 					setSGR [Reset]
 					putMVar chatroomMV (Chatroom (getRoomName chatroom) ((getRoomClients chatroom) \\ [(fromJust maybeClient)]) (getRoomId chatroom))
@@ -290,7 +290,7 @@ leaveChatroom s msg forumMV = do
 						putStrLn "Room is present"
 						setSGR [SetColor Foreground Vivid Green]
 						sendPseudoLeaveResponse s clientID chatroomID
-						setSGR [SetColor Foreground Dull Magenta]
+						setSGR [SetColor Foreground Dull Red]
 						broadcastPseudoLeave clientID clientName chatroom
 						setSGR [Reset]
 						putMVar chatroomMV chatroom
@@ -364,7 +364,7 @@ chatToRoom s msg forumMV = do
 			let maybeClient = getClientByID (read clientId) $ getRoomClients chatroom
 			if isJust maybeClient
 				then do
-					setSGR [SetColor Foreground Dull Magenta]
+					setSGR [SetColor Foreground Dull Red]
 					broadcastChat roomId clientName message chatroom
 					setSGR [Reset]
 					putMVar chatroomMV (Chatroom (getRoomName chatroom) ((getRoomClients chatroom) \\ [(fromJust maybeClient)]) (getRoomId chatroom))

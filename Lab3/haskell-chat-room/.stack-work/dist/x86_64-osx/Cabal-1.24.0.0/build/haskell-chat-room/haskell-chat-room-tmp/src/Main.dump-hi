@@ -1,10 +1,10 @@
 
 ==================== FINAL INTERFACE ====================
-2016-11-23 15:24:30.34222 UTC
+2016-11-23 15:39:39.782193 UTC
 
 interface main@main:Main 8001
-  interface hash: 706f8c160220cc58f49990205b3a96f3
-  ABI hash: b212a23a8e55417e019763d580a04bc0
+  interface hash: 40da43d1fc2f72fae41e2c2aedf1b7dc
+  ABI hash: 86c047903198fc9e7c88134f36b76118
   export-list hash: 658e80080cbb66869483c4cbf4ca5b77
   orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
   flag hash: 8668484c2415d15fbda37e3f0d670903
@@ -368,7 +368,7 @@ c96e63bc421796e100b468f466897db8
                    Main.broadcastLeave2
                    GHC.Types.True
                    ipv4 } } } }) -}
-1864da20749fc1824ee91208ae6aef30
+40be441fb6460d345d6da6678f162da2
   $wchatToRoom ::
     GHC.Base.String
     -> Main.Forum
@@ -1046,7 +1046,7 @@ ff521e2a1dbd70ee5103ad91c314da51
                    (w2 :: Main.Chatroom)
                    (w3 :: GHC.Prim.State# GHC.Prim.RealWorld)[OneShot] ->
                  Main.$wbroadcastPseudoLeave w1 w2 w3) -}
-e3a78afb58f913a98d1af8fa21f90188
+461ba0ec67f0b9876a5c5f4ff1f3ce55
   chatToRoom ::
     Network.Socket.Types.Socket
     -> GHC.Base.String -> Main.Forum -> GHC.Types.IO ()
@@ -1058,7 +1058,7 @@ e3a78afb58f913a98d1af8fa21f90188
                  ->_R <GHC.Base.String>_R
                  ->_R <Main.Forum>_R
                  ->_R Sym (GHC.Types.N:IO[0] <()>_R)) -}
-3032d8e1baf268bf3ab1694183d88019
+7036f16b8ee06604581ad4020ba11cda
   chatToRoom1 ::
     Network.Socket.Types.Socket
     -> GHC.Base.String
@@ -1113,29 +1113,29 @@ a42ce11be3f54586b659ac839dfb9476
   {- Unfolding: (case System.Console.ANSI.Unix.$wsgrToCode
                         System.Console.ANSI.Common.Reset of ww { DEFAULT ->
                  GHC.Types.I# ww }) -}
-53e69436d116d6c4b84c6a99e9e16dcb
+4d743c9b4d5168f2a32effda28c2da9b
   chatToRoom5 :: GHC.Base.String
   {- Unfolding: (System.Console.ANSI.Unix.csi
                    Main.chatToRoom6
                    System.Console.ANSI.Unix.setSGRCode1) -}
-06bddc63b06bc0bce86a425575860a08
+41f2262c6cce79c6f155a06d09f92c49
   chatToRoom6 :: [GHC.Types.Int]
   {- Unfolding: (GHC.Types.:
                    @ GHC.Types.Int
                    Main.chatToRoom7
                    (GHC.Types.[] @ GHC.Types.Int)) -}
-fab3fbaa9b81f926d211924befcb9129
+26a42775e776eea4757b9b3d929c5861
   chatToRoom7 :: GHC.Types.Int
   {- Unfolding: (case System.Console.ANSI.Unix.$wsgrToCode
                         Main.chatToRoom8 of ww { DEFAULT ->
                  GHC.Types.I# ww }) -}
-5d26154818c541e2e7ccfa14bccdb39f
+4d35ecc94b8cd67ea6dcda38a1d4e019
   chatToRoom8 :: System.Console.ANSI.Common.SGR
   {- HasNoCafRefs, Strictness: m8,
      Unfolding: (System.Console.ANSI.Common.SetColor
                    System.Console.ANSI.Common.Foreground
                    System.Console.ANSI.Common.Dull
-                   System.Console.ANSI.Common.Magenta) -}
+                   System.Console.ANSI.Common.Red) -}
 39cfe66bcd76215e1f6d2de30203e81c
   chatToRoom9 :: Main.ID
   {- Strictness: x -}
