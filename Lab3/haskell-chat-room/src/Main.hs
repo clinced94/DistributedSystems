@@ -20,7 +20,7 @@ type Port = String
 type ID = Int
 
 data Client = Client IP Port Name Socket ID
-	deriving Eq
+	deriving (Eq, Show)
 
 data Chatroom = Chatroom Name [Client] ID
 	deriving Eq
@@ -262,6 +262,7 @@ broadcastJoin :: Client -> Chatroom -> IO ()
 broadcastJoin c ch = do
 	let broadcastMsg = chatroomJoinBroadcast c ch
 	putStrLn "Broadcasting..."
+	mapM_ (\y -> putStrLn (show y)) (getRoomClients ch)
 	mapM_ (\x -> sendToClient x broadcastMsg) (getRoomClients ch)
 	putStrLn "Broadcast sent!"
 
@@ -389,8 +390,7 @@ getChatMessageInfo msg = (roomId, clientId, clientName, message) where
 sendToClient :: Client -> String -> IO ()
 sendToClient c msg = do
 	socketName <- getPeerName $ getClientSocket c
-	putStrLn $ show socketName
-	putStrLn $ "Sending to client " ++ show (getClientID c) ++ " (" ++ (getClientIP c) ++ ":" ++ (getClientPort c) ++ ") :\n" ++ msg
+	putStrLn $ "Sending to client " ++ show (getClientID c) ++ " (" ++ show socketName ++ ") :\n" ++ msg
 	NSB.send (getClientSocket c) $ B.pack msg
 	return ()
 
