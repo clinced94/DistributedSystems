@@ -106,8 +106,10 @@ getChatroom name (room:rooms) = do
 		else getChatroom name rooms
 
 getChatroomByID :: ID -> [MVar Chatroom] -> IO (Maybe (MVar Chatroom))
-getChatroomByID cId [] = return Nothing
+getChatroomByID _ [] = return Nothing
 getChatroomByID cId (room:rooms) = do
+	putStrLn $ "NO. OF CHATROOMS:: " ++ show (length (room:rooms))
+	putStrLn "GETCHATROOMBYID:: TAKE ROOM"
 	currentChatroom <- takeMVar room
 	putMVar room currentChatroom
 	if cId == getRoomId currentChatroom
