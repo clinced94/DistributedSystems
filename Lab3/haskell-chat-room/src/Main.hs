@@ -302,6 +302,7 @@ leaveChatroom s msg forumMV = do
 						setSGR [SetColor Foreground Dull Magenta]
 						broadcastPseudoLeave clientID clientName chatroom
 						setSGR [Reset]
+						putMVar chatroomMV chatroom
 						putMVar forumMV forum
 				else do
 					putStrLn "Room is not present"
