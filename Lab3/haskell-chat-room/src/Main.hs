@@ -289,6 +289,7 @@ leaveChatroom s msg forumMV = do
 					else do
 						putStrLn "Room is present"
 						setSGR [SetColor Foreground Vivid Green]
+						putStrLn "SENDING PSEUDO RESPONSE"
 						sendPseudoLeaveResponse s clientID chatroomID
 						setSGR [SetColor Foreground Dull Magenta]
 						broadcastPseudoLeave clientID clientName chatroom
@@ -340,6 +341,7 @@ clientLeaveResponse cl ch = "LEFT_CHATROOM:" ++ show (getRoomId ch) ++ "\nJOIN_I
 sendPseudoLeaveResponse :: Socket -> String -> String -> IO ()
 sendPseudoLeaveResponse s clId chId = do
 	let responseMsg = clientPseudoLeaveResponse clId chId
+	putStrLn $ "Response:\n" ++ responseMsg
 	NSB.send s $ B.pack responseMsg
 	return ()
 
