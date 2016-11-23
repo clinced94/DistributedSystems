@@ -388,6 +388,8 @@ getChatMessageInfo msg = (roomId, clientId, clientName, message) where
 
 sendToClient :: Client -> String -> IO ()
 sendToClient c msg = do
+	socketName <- getPeerName $ getClientSocket c
+	putStrLn $ show socketName
 	putStrLn $ "Sending to client " ++ show (getClientID c) ++ " (" ++ (getClientIP c) ++ ":" ++ (getClientPort c) ++ ") :\n" ++ msg
 	NSB.send (getClientSocket c) $ B.pack msg
 	return ()
