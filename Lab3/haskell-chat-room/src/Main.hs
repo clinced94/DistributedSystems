@@ -271,6 +271,8 @@ leaveChatroom s msg forumMV = do
 	let (chatroomID, clientID, clientName) = getLeaveMessageInfo msg
 	forum <- takeMVar forumMV
 	maybeChatroomMV <- getChatroomByID (read chatroomID) forum
+	putStrLn "CHATROOM CHECK: "
+	putStrLn $ show $ isJust maybeChatroomMV
 	if isJust maybeChatroomMV
 		then do
 			let chatroomMV = fromJust maybeChatroomMV
