@@ -170,7 +170,10 @@ receiveMessage sock killSwitch host port clientInfo forum gen = do
 	setSGR [Reset]
 	message <- NSB.recv sock 4096
 	setSGR [SetColor Foreground Vivid Cyan]
-	putStrLn $ "[LOG] Message:\n" ++ (B.unpack message)
+	if not(null (B.unpack message)) then do
+		putStrLn $ "[LOG] Message:\n" ++ (B.unpack message)
+		else do
+			putStr ""
 	setSGR [Reset]
 	handleMessage sock (B.unpack message) killSwitch host port clientInfo forum gen
 
@@ -193,7 +196,7 @@ handleMessage s msg killSwitch host port clientInfo forum gen
 		putStrLn "Killswitch Active"
 		putMVar killSwitch ()
 	| otherwise = do
-		putStrLn "Nothing is being done"
+		--putStrLn "Nothing is being done"
 		receiveMessage s killSwitch host port clientInfo forum gen
 
 enterChatroom :: Socket -> String -> String -> String -> String -> Forum -> IDGenerator -> IO ()
