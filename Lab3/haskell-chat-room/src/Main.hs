@@ -273,8 +273,9 @@ leaveChatroom s msg forumMV = do
 	putStrLn "FORUM CHECK: "
 	putStrLn $ show forumCheck
 	forum <- takeMVar forumMV
+	putStrLn "CHATROOM GETTING CHATROOM BY ID: "
 	maybeChatroomMV <- getChatroomByID (read chatroomID) forum
-	putStrLn "CHATROOM CHECK: "
+	putStrLn "CHATROOM MAYBE CHECK: "
 	putStrLn $ show $ isJust maybeChatroomMV
 	if isJust maybeChatroomMV
 		then do
