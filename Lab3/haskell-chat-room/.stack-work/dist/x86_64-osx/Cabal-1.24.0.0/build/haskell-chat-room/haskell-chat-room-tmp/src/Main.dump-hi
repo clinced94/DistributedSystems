@@ -1,10 +1,10 @@
 
 ==================== FINAL INTERFACE ====================
-2016-11-23 13:31:39.591677 UTC
+2016-11-23 13:48:21.061644 UTC
 
 interface main@main:Main 8001
-  interface hash: 542bab9d27adc93a26a6bffe0dd76b8e
-  ABI hash: 7f0a5008cc3de1f2ed3e48d3735a5c28
+  interface hash: 2b266674b2dc5b58d72053a779ddd278
+  ABI hash: 06fe07a73b5d1ea760479a45cd9073c1
   export-list hash: 658e80080cbb66869483c4cbf4ca5b77
   orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
   flag hash: 8668484c2415d15fbda37e3f0d670903
@@ -306,7 +306,7 @@ d6831ef04cb9301b090dfae6f7bb7ec7
                                           mvar2#) of wild7 {
                                   GHC.Types.False -> GHC.Types.False
                                   GHC.Types.True -> GHC.Classes.eqInt ww4 ww9 } } } } } } } }) -}
-7c67bca244b2b71bc00744235bd0c488
+c96e63bc421796e100b468f466897db8
   $wbroadcastPseudoLeave ::
     GHC.Base.String
     -> Main.Chatroom
@@ -332,34 +332,43 @@ d6831ef04cb9301b090dfae6f7bb7ec7
                         GHC.Types.True
                         ipv of ds2 { (#,#) ipv2 ipv3 ->
                  case w1 of wild { Main.Chatroom ds clients ds3 ->
-                 case clients of wild1 {
-                   []
-                   -> case GHC.List.badHead
-                      ret_ty (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
-                      of {}
-                   : y ys
-                   -> case y of wild2 { Main.Client ds4 ds5 ds6 sock ds7 ->
-                      case sock of ww { Network.Socket.Types.MkSocket ww1 ww2 ww3 ww4 ww5 ->
-                      case GHC.List.$wlenAcc
-                             @ GHC.Types.Char
-                             broadcastMsg
-                             0# of ww7 { DEFAULT ->
-                      case Data.ByteString.Internal.$wunsafePackLenChars
-                             ww7
-                             broadcastMsg of ww6 { Data.ByteString.Internal.PS ww8 ww9 ww10 ww11 ->
-                      case Network.Socket.ByteString.$wsend
-                             ww1
-                             ww8
-                             ww9
-                             ww10
-                             ww11
-                             ipv2 of ds8 { (#,#) ipv4 ipv5 ->
-                      GHC.IO.Handle.Text.hPutStr2
-                        GHC.IO.Handle.FD.stdout
-                        Main.broadcastLeave2
-                        GHC.Types.True
-                        ipv4 } } } } } } } } }) -}
-51ffabf3e9a424f57ffb055dbb0ff75b
+                 let {
+                   lvl27 :: Data.ByteString.Internal.ByteString
+                   = case GHC.List.$wlenAcc
+                            @ GHC.Types.Char
+                            broadcastMsg
+                            0# of ww2 { DEFAULT ->
+                     Data.ByteString.Internal.$wunsafePackLenChars ww2 broadcastMsg }
+                 } in
+                 letrec {
+                   go :: [Main.Client]
+                         -> GHC.Prim.State# GHC.Prim.RealWorld
+                         -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
+                     {- Arity: 2, Strictness: <S,1*U><S,U> -}
+                   = \ (ds4 :: [Main.Client])
+                       (eta :: GHC.Prim.State# GHC.Prim.RealWorld)[OneShot] ->
+                     case ds4 of wild1 {
+                       [] -> (# eta, GHC.Tuple.() #)
+                       : y ys
+                       -> case y of wild2 { Main.Client ds5 ds6 ds7 sock ds8 ->
+                          case sock of ww { Network.Socket.Types.MkSocket ww1 ww2 ww3 ww4 ww5 ->
+                          case lvl27 of ww6 { Data.ByteString.Internal.PS ww7 ww8 ww9 ww10 ->
+                          case Network.Socket.ByteString.$wsend
+                                 ww1
+                                 ww7
+                                 ww8
+                                 ww9
+                                 ww10
+                                 eta of ds9 { (#,#) ipv4 ipv5 ->
+                          go ys ipv4 } } } } }
+                 } in
+                 case go clients ipv2 of ds4 { (#,#) ipv4 ipv5 ->
+                 GHC.IO.Handle.Text.hPutStr2
+                   GHC.IO.Handle.FD.stdout
+                   Main.broadcastLeave2
+                   GHC.Types.True
+                   ipv4 } } } }) -}
+520a3ad6b611fd3a21cfbab8db28ec4a
   $wchatToRoom ::
     GHC.Base.String
     -> Main.Forum
@@ -761,7 +770,7 @@ f1777cc5faff7720dcc0fe90481ceef7
                            rmId)
                         ipv of s2# { DEFAULT ->
                  (# s2#, GHC.Tuple.() #) } } } }) -}
-57de8d1820828cd75460e62750a533c3
+0cc1eed15fcdc75a8013f648d5afb7d8
   broadcastChat ::
     GHC.Base.String
     -> GHC.Base.String
@@ -778,7 +787,7 @@ f1777cc5faff7720dcc0fe90481ceef7
                  ->_R <GHC.Base.String>_R
                  ->_R <Main.Chatroom>_R
                  ->_R Sym (GHC.Types.N:IO[0] <()>_R)) -}
-8979c37705bcf881bc1c206ab8c90940
+a4a6f01717780b09acac8624c321c834
   broadcastChat1 ::
     GHC.Base.String
     -> GHC.Base.String
@@ -799,59 +808,71 @@ f1777cc5faff7720dcc0fe90481ceef7
                         GHC.Types.True
                         eta of ds1 { (#,#) ipv ipv1 ->
                  case ch of wild { Main.Chatroom ds clients ds2 ->
-                 case clients of wild1 {
-                   []
-                   -> case GHC.List.badHead
-                      ret_ty (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
-                      of {}
-                   : y ys
-                   -> case Main.broadcastChat3
-                             y
-                             (Main.chatroomChatBroadcast roomId clientName message)
-                             ipv of ds3 { (#,#) ipv2 ipv3 ->
-                      GHC.IO.Handle.Text.hPutStr2
-                        GHC.IO.Handle.FD.stdout
-                        Main.broadcastChat2
-                        GHC.Types.True
-                        ipv2 } } } }) -}
+                 let {
+                   chatMessage :: GHC.Base.String
+                   = Main.chatroomChatBroadcast roomId clientName message
+                 } in
+                 let {
+                   lvl27 :: [GHC.Types.Char]
+                   = Main.broadcastChat3
+                       @ [GHC.Types.Char]
+                       (GHC.Types.: @ GHC.Types.Char)
+                       chatMessage
+                 } in
+                 letrec {
+                   go :: [Main.Client]
+                         -> GHC.Prim.State# GHC.Prim.RealWorld
+                         -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
+                     {- Arity: 2, Strictness: <S,1*U><S,U> -}
+                   = \ (ds3 :: [Main.Client])
+                       (eta1 :: GHC.Prim.State# GHC.Prim.RealWorld)[OneShot] ->
+                     case ds3 of wild1 {
+                       [] -> (# eta1, GHC.Tuple.() #)
+                       : y ys
+                       -> case GHC.IO.Handle.Text.hPutStr2
+                                 GHC.IO.Handle.FD.stdout
+                                 lvl27
+                                 GHC.Types.True
+                                 eta1 of ds4 { (#,#) ipv2 ipv3 ->
+                          case y of wild2 { Main.Client ds5 ds6 ds7 sock ds8 ->
+                          case sock of ww { Network.Socket.Types.MkSocket ww1 ww2 ww3 ww4 ww5 ->
+                          case GHC.List.$wlenAcc
+                                 @ GHC.Types.Char
+                                 chatMessage
+                                 0# of ww7 { DEFAULT ->
+                          case Data.ByteString.Internal.$wunsafePackLenChars
+                                 ww7
+                                 chatMessage of ww6 { Data.ByteString.Internal.PS ww8 ww9 ww10 ww11 ->
+                          case Network.Socket.ByteString.$wsend
+                                 ww1
+                                 ww8
+                                 ww9
+                                 ww10
+                                 ww11
+                                 ipv2 of ds9 { (#,#) ipv4 ipv5 ->
+                          go ys ipv4 } } } } } } }
+                 } in
+                 case go clients ipv of ds3 { (#,#) ipv2 ipv3 ->
+                 GHC.IO.Handle.Text.hPutStr2
+                   GHC.IO.Handle.FD.stdout
+                   Main.broadcastChat2
+                   GHC.Types.True
+                   ipv2 } } }) -}
 0775d288d570047dd41319a15c7aa13c
   broadcastChat2 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString#
                    "Chat Broadcast Sent!"#) -}
-a832a0561a56d28efb8d6ab32e8b5f30
-  broadcastChat3 ::
-    Main.Client
-    -> GHC.Base.String
-    -> GHC.Prim.State# GHC.Prim.RealWorld
-    -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
-  {- Arity: 3,
-     Strictness: <L,1*U(A,A,A,1*U(U(U),A,A,A,A),A)><L,U><S,U>,
-     Unfolding: (\ (c :: Main.Client)
-                   (msg :: GHC.Base.String)
-                   (s :: GHC.Prim.State# GHC.Prim.RealWorld)[OneShot] ->
-                 case GHC.IO.Handle.Text.hPutStr2
-                        GHC.IO.Handle.FD.stdout
-                        (GHC.CString.unpackAppendCString# "Sending to client:\n"# msg)
-                        GHC.Types.True
-                        s of ds1 { (#,#) ipv ipv1 ->
-                 case c of wild { Main.Client ds ds2 ds3 sock ds4 ->
-                 case sock of ww { Network.Socket.Types.MkSocket ww1 ww2 ww3 ww4 ww5 ->
-                 case GHC.List.$wlenAcc @ GHC.Types.Char msg 0# of ww7 { DEFAULT ->
-                 case Data.ByteString.Internal.$wunsafePackLenChars
-                        ww7
-                        msg of ww6 { Data.ByteString.Internal.PS ww8 ww9 ww10 ww11 ->
-                 case Network.Socket.ByteString.$wsend
-                        ww1
-                        ww8
-                        ww9
-                        ww10
-                        ww11
-                        ipv of ds5 { (#,#) ipv2 ipv3 ->
-                 (# ipv2, GHC.Tuple.() #) } } } } } }) -}
+f4115d7efd067cf5c8cab0f04e663c34
+  broadcastChat3 :: (GHC.Types.Char -> b -> b) -> b -> b
+  {- Arity: 2, HasNoCafRefs, Strictness: <L,C(C1(U))><L,U>,
+     Unfolding: (\ @ b
+                   (c :: GHC.Types.Char -> b -> b)[OneShot]
+                   (n :: b)[OneShot] ->
+                 GHC.CString.unpackFoldrCString# @ b "Sending to client:\n"# c n) -}
 fe800181d9e42a8dcf97b250b62adfb8
   broadcastChat4 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString# "Broadcasting Chat"#) -}
-4768ed8010ffff53057a74ff7c10efd3
+e23854d5818595c5fc845b881a517b4a
   broadcastJoin :: Main.Client -> Main.Chatroom -> GHC.Types.IO ()
   {- Arity: 3,
      Strictness: <L,1*U(A,A,U,A,A)><L,1*U(A,1*U,1*U(U))><S,U>,
@@ -861,7 +882,7 @@ fe800181d9e42a8dcf97b250b62adfb8
                 (<Main.Client>_R
                  ->_R <Main.Chatroom>_R
                  ->_R Sym (GHC.Types.N:IO[0] <()>_R)) -}
-10924ec1fac904959564553fc4370a17
+32a68b6fb2010b3b0752d4f7ba7bd20c
   broadcastJoin1 ::
     Main.Client
     -> Main.Chatroom
@@ -878,28 +899,62 @@ fe800181d9e42a8dcf97b250b62adfb8
                         GHC.Types.True
                         eta of ds1 { (#,#) ipv ipv1 ->
                  case ch of wild { Main.Chatroom ds clients ds2 ->
-                 case clients of wild1 {
-                   []
-                   -> case GHC.List.badHead
-                      ret_ty (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
-                      of {}
-                   : y ys
-                   -> case Main.broadcastChat3
-                             y
-                             (Main.chatroomJoinBroadcast c wild)
-                             ipv of ds3 { (#,#) ipv2 ipv3 ->
-                      GHC.IO.Handle.Text.hPutStr2
-                        GHC.IO.Handle.FD.stdout
-                        Main.broadcastJoin2
-                        GHC.Types.True
-                        ipv2 } } } }) -}
+                 let {
+                   broadcastMsg :: GHC.Base.String = Main.chatroomJoinBroadcast c wild
+                 } in
+                 let {
+                   lvl27 :: [GHC.Types.Char]
+                   = Main.broadcastChat3
+                       @ [GHC.Types.Char]
+                       (GHC.Types.: @ GHC.Types.Char)
+                       broadcastMsg
+                 } in
+                 letrec {
+                   go :: [Main.Client]
+                         -> GHC.Prim.State# GHC.Prim.RealWorld
+                         -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
+                     {- Arity: 2, Strictness: <S,1*U><S,U> -}
+                   = \ (ds3 :: [Main.Client])
+                       (eta1 :: GHC.Prim.State# GHC.Prim.RealWorld)[OneShot] ->
+                     case ds3 of wild1 {
+                       [] -> (# eta1, GHC.Tuple.() #)
+                       : y ys
+                       -> case GHC.IO.Handle.Text.hPutStr2
+                                 GHC.IO.Handle.FD.stdout
+                                 lvl27
+                                 GHC.Types.True
+                                 eta1 of ds4 { (#,#) ipv2 ipv3 ->
+                          case y of wild2 { Main.Client ds5 ds6 ds7 sock ds8 ->
+                          case sock of ww { Network.Socket.Types.MkSocket ww1 ww2 ww3 ww4 ww5 ->
+                          case GHC.List.$wlenAcc
+                                 @ GHC.Types.Char
+                                 broadcastMsg
+                                 0# of ww7 { DEFAULT ->
+                          case Data.ByteString.Internal.$wunsafePackLenChars
+                                 ww7
+                                 broadcastMsg of ww6 { Data.ByteString.Internal.PS ww8 ww9 ww10 ww11 ->
+                          case Network.Socket.ByteString.$wsend
+                                 ww1
+                                 ww8
+                                 ww9
+                                 ww10
+                                 ww11
+                                 ipv2 of ds9 { (#,#) ipv4 ipv5 ->
+                          go ys ipv4 } } } } } } }
+                 } in
+                 case go clients ipv of ds3 { (#,#) ipv2 ipv3 ->
+                 GHC.IO.Handle.Text.hPutStr2
+                   GHC.IO.Handle.FD.stdout
+                   Main.broadcastJoin2
+                   GHC.Types.True
+                   ipv2 } } }) -}
 6d90d30abfdbe575d178d8ca194e158b
   broadcastJoin2 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString# "Broadcast sent!"#) -}
 7f7ae5ad45486ce1e607ee3864c91610
   broadcastJoin3 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString# "Broadcasting..."#) -}
-82c77d678a50264877b4d8d54307a3bd
+ac6bfbcd68a220e0048156ec8e1a1f6b
   broadcastLeave :: Main.Client -> Main.Chatroom -> GHC.Types.IO ()
   {- Arity: 3,
      Strictness: <L,1*U(A,A,U,A,A)><L,U(1*U,1*U,1*U(U))><S,U>,
@@ -909,7 +964,7 @@ fe800181d9e42a8dcf97b250b62adfb8
                 (<Main.Client>_R
                  ->_R <Main.Chatroom>_R
                  ->_R Sym (GHC.Types.N:IO[0] <()>_R)) -}
-1528bf4a840a0a07f4294271bcfe0748
+814ca9744a7ffa09385bd74f2a86fe76
   broadcastLeave1 ::
     Main.Client
     -> Main.Chatroom
@@ -934,33 +989,42 @@ fe800181d9e42a8dcf97b250b62adfb8
                         GHC.Types.True
                         ipv of ds2 { (#,#) ipv2 ipv3 ->
                  case ch of wild { Main.Chatroom ds clients ds3 ->
-                 case clients of wild1 {
-                   []
-                   -> case GHC.List.badHead
-                      ret_ty (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
-                      of {}
-                   : y ys
-                   -> case y of wild2 { Main.Client ds4 ds5 ds6 sock ds7 ->
-                      case sock of ww { Network.Socket.Types.MkSocket ww1 ww2 ww3 ww4 ww5 ->
-                      case GHC.List.$wlenAcc
-                             @ GHC.Types.Char
-                             broadcastMsg
-                             0# of ww7 { DEFAULT ->
-                      case Data.ByteString.Internal.$wunsafePackLenChars
-                             ww7
-                             broadcastMsg of ww6 { Data.ByteString.Internal.PS ww8 ww9 ww10 ww11 ->
-                      case Network.Socket.ByteString.$wsend
-                             ww1
-                             ww8
-                             ww9
-                             ww10
-                             ww11
-                             ipv2 of ds8 { (#,#) ipv4 ipv5 ->
-                      GHC.IO.Handle.Text.hPutStr2
-                        GHC.IO.Handle.FD.stdout
-                        Main.broadcastLeave2
-                        GHC.Types.True
-                        ipv4 } } } } } } } } }) -}
+                 let {
+                   lvl27 :: Data.ByteString.Internal.ByteString
+                   = case GHC.List.$wlenAcc
+                            @ GHC.Types.Char
+                            broadcastMsg
+                            0# of ww2 { DEFAULT ->
+                     Data.ByteString.Internal.$wunsafePackLenChars ww2 broadcastMsg }
+                 } in
+                 letrec {
+                   go :: [Main.Client]
+                         -> GHC.Prim.State# GHC.Prim.RealWorld
+                         -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
+                     {- Arity: 2, Strictness: <S,1*U><S,U> -}
+                   = \ (ds4 :: [Main.Client])
+                       (eta1 :: GHC.Prim.State# GHC.Prim.RealWorld)[OneShot] ->
+                     case ds4 of wild1 {
+                       [] -> (# eta1, GHC.Tuple.() #)
+                       : y ys
+                       -> case y of wild2 { Main.Client ds5 ds6 ds7 sock ds8 ->
+                          case sock of ww { Network.Socket.Types.MkSocket ww1 ww2 ww3 ww4 ww5 ->
+                          case lvl27 of ww6 { Data.ByteString.Internal.PS ww7 ww8 ww9 ww10 ->
+                          case Network.Socket.ByteString.$wsend
+                                 ww1
+                                 ww7
+                                 ww8
+                                 ww9
+                                 ww10
+                                 eta1 of ds9 { (#,#) ipv4 ipv5 ->
+                          go ys ipv4 } } } } }
+                 } in
+                 case go clients ipv2 of ds4 { (#,#) ipv4 ipv5 ->
+                 GHC.IO.Handle.Text.hPutStr2
+                   GHC.IO.Handle.FD.stdout
+                   Main.broadcastLeave2
+                   GHC.Types.True
+                   ipv4 } } } }) -}
 7ade19ce64f156abf1d8f2728fd3f4d3
   broadcastLeave2 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString#
@@ -969,7 +1033,7 @@ fe800181d9e42a8dcf97b250b62adfb8
   broadcastLeave3 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString#
                    "Broadcasting leave:"#) -}
-3ad337cb411bdda9c40d3282b9a8f029
+4f196cf835a1ac37e6112e9f07f73f58
   broadcastPseudoLeave ::
     GHC.Base.String
     -> GHC.Base.String -> Main.Chatroom -> GHC.Types.IO ()
@@ -981,7 +1045,7 @@ fe800181d9e42a8dcf97b250b62adfb8
                  ->_R <GHC.Base.String>_R
                  ->_R <Main.Chatroom>_R
                  ->_R Sym (GHC.Types.N:IO[0] <()>_R)) -}
-074f6b06fbf467665c95d3a91ad24aeb
+ff521e2a1dbd70ee5103ad91c314da51
   broadcastPseudoLeave1 ::
     GHC.Base.String
     -> GHC.Base.String
@@ -996,7 +1060,7 @@ fe800181d9e42a8dcf97b250b62adfb8
                    (w2 :: Main.Chatroom)
                    (w3 :: GHC.Prim.State# GHC.Prim.RealWorld)[OneShot] ->
                  Main.$wbroadcastPseudoLeave w1 w2 w3) -}
-9641fbbc071833ae9592fd32b36ea58f
+2431e16772a58581690ba948b246bd26
   chatToRoom ::
     Network.Socket.Types.Socket
     -> GHC.Base.String -> Main.Forum -> GHC.Types.IO ()
@@ -1008,7 +1072,7 @@ fe800181d9e42a8dcf97b250b62adfb8
                  ->_R <GHC.Base.String>_R
                  ->_R <Main.Forum>_R
                  ->_R Sym (GHC.Types.N:IO[0] <()>_R)) -}
-2c3da165407a7fa15e3e64cac5de1cdd
+a51b517566c4d435b59217d64a31a6ed
   chatToRoom1 ::
     Network.Socket.Types.Socket
     -> GHC.Base.String
@@ -1035,14 +1099,14 @@ dec1ff03bce75006a7c92d2e58ce1e1d
                  (Text.ParserCombinators.ReadP.N:ReadP[0] <Main.ID>_R)
                    @ Main.ID
                    (Text.Read.readEither5 @ Main.ID)) -}
-fe60062d5b97eb8ea816bc2abdca4d96
+d346a8e356b06560d8a8aa45286843f3
   chatToRoom12 ::
     Main.ID
     -> [GHC.MVar.MVar Main.Chatroom]
     -> GHC.Prim.State# GHC.Prim.RealWorld
     -> (# GHC.Prim.State# GHC.Prim.RealWorld,
           GHC.Base.Maybe (GHC.MVar.MVar Main.Chatroom) #)
-  {- Arity: 3, Strictness: <L,1*U(U)><S,1*U><S,U> -}
+  {- Arity: 3, HasNoCafRefs, Strictness: <L,1*U(U)><S,1*U><S,U> -}
 00d566ed94dc6b4e2cf228fa7600d184
   chatToRoom13 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString#
@@ -1502,12 +1566,12 @@ d75832fb84957bb92fd29970ec42e463
     -> (# GHC.Prim.State# GHC.Prim.RealWorld,
           GHC.Base.Maybe (GHC.MVar.MVar Main.Chatroom) #)
   {- Arity: 3, HasNoCafRefs, Strictness: <L,U><S,1*U><S,U> -}
-76e68cf67d209ae22c29f9479ef4cc07
+ba9321f6aa1b48ea4a31ab6329e61432
   getChatroomByID ::
     Main.ID
     -> [GHC.MVar.MVar Main.Chatroom]
     -> GHC.Types.IO (GHC.Base.Maybe (GHC.MVar.MVar Main.Chatroom))
-  {- Arity: 3, Strictness: <L,1*U(U)><S,1*U><S,U>,
+  {- Arity: 3, HasNoCafRefs, Strictness: <L,1*U(U)><S,1*U><S,U>,
      Unfolding: InlineRule (0, True, True)
                 Main.chatToRoom12
                   `cast`
@@ -1731,7 +1795,7 @@ c8bb49924852ee5137232278e30807ac
                         ipv of s2# { DEFAULT ->
                  (# s2#,
                     GHC.MVar.MVar @ [GHC.MVar.MVar Main.Chatroom] ipv1 #) } }) -}
-253f61dabeb6ceba74aeea4b436fb30f
+7001bec3e40d43f811d6a4c25617488f
   initSocket ::
     GHC.Base.String
     -> GHC.Base.String -> GHC.Types.IO Network.Socket.Types.Socket
@@ -1742,7 +1806,7 @@ c8bb49924852ee5137232278e30807ac
                 (<GHC.Base.String>_R
                  ->_R <GHC.Base.String>_R
                  ->_R Sym (GHC.Types.N:IO[0] <Network.Socket.Types.Socket>_R)) -}
-c2512713f90adf4a17b955ce8a43a1ed
+bf7cc64078ed5a8f021ae16cb1b77a08
   initSocket1 ::
     GHC.Base.String
     -> GHC.Base.String
@@ -1852,10 +1916,10 @@ c2512713f90adf4a17b955ce8a43a1ed
                              ipv7
                              ipv8 of s4 { DEFAULT ->
                       $w$j s4 } } } } } } } } } } } } } }) -}
-cd9896611d56019ba50b84214cff075e
+d6fabf93ac44777cc471901bdf9f442d
   initSocket2 :: [GHC.Types.Char]
   {- Unfolding: (GHC.CString.unpackCString#
-                   "Pattern match failure in do expression at src/Main.hs:153:9-14"#) -}
+                   "Pattern match failure in do expression at src/Main.hs:151:9-14"#) -}
 6e5238b5a58ec2dd5095c2dee749f360
   insertChatroom ::
     Main.Forum -> GHC.MVar.MVar Main.Chatroom -> GHC.Types.IO ()
@@ -2282,16 +2346,49 @@ bebf02c5e431f5cc0a3f3e95327ea673
                         ww11
                         ipv of ds2 { (#,#) ipv2 ipv3 ->
                  (# ipv2, GHC.Tuple.() #) } } } } }) -}
-9fa9dcf16537a9ca912de45ef23b3012
+27e08cb651eb14bf3d7efe8362114d0f
   sendToClient :: Main.Client -> GHC.Base.String -> GHC.Types.IO ()
   {- Arity: 3,
      Strictness: <L,1*U(A,A,A,1*U(U(U),A,A,A,A),A)><L,U><S,U>,
      Unfolding: InlineRule (0, True, True)
-                Main.broadcastChat3
+                Main.sendToClient1
                   `cast`
                 (<Main.Client>_R
                  ->_R <GHC.Base.String>_R
                  ->_R Sym (GHC.Types.N:IO[0] <()>_R)) -}
+783c8ecf69c91d771800d6a0f18d3cbd
+  sendToClient1 ::
+    Main.Client
+    -> GHC.Base.String
+    -> GHC.Prim.State# GHC.Prim.RealWorld
+    -> (# GHC.Prim.State# GHC.Prim.RealWorld, () #)
+  {- Arity: 3,
+     Strictness: <L,1*U(A,A,A,1*U(U(U),A,A,A,A),A)><L,U><S,U>,
+     Unfolding: (\ (c :: Main.Client)
+                   (msg :: GHC.Base.String)
+                   (s :: GHC.Prim.State# GHC.Prim.RealWorld)[OneShot] ->
+                 case GHC.IO.Handle.Text.hPutStr2
+                        GHC.IO.Handle.FD.stdout
+                        (Main.broadcastChat3
+                           @ [GHC.Types.Char]
+                           (GHC.Types.: @ GHC.Types.Char)
+                           msg)
+                        GHC.Types.True
+                        s of ds1 { (#,#) ipv ipv1 ->
+                 case c of wild { Main.Client ds ds2 ds3 sock ds4 ->
+                 case sock of ww { Network.Socket.Types.MkSocket ww1 ww2 ww3 ww4 ww5 ->
+                 case GHC.List.$wlenAcc @ GHC.Types.Char msg 0# of ww7 { DEFAULT ->
+                 case Data.ByteString.Internal.$wunsafePackLenChars
+                        ww7
+                        msg of ww6 { Data.ByteString.Internal.PS ww8 ww9 ww10 ww11 ->
+                 case Network.Socket.ByteString.$wsend
+                        ww1
+                        ww8
+                        ww9
+                        ww10
+                        ww11
+                        ipv of ds5 { (#,#) ipv2 ipv3 ->
+                 (# ipv2, GHC.Tuple.() #) } } } } } }) -}
 d1f3e7eac84cdd3929aaedecc9f9b449
   server ::
     Network.Socket.Types.Socket

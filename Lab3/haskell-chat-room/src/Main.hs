@@ -108,8 +108,6 @@ getChatroom name (room:rooms) = do
 getChatroomByID :: ID -> [MVar Chatroom] -> IO (Maybe (MVar Chatroom))
 getChatroomByID _ [] = return Nothing
 getChatroomByID cId (room:rooms) = do
-	putStrLn $ "NO. OF CHATROOMS:: " ++ show (length (room:rooms))
-	putStrLn "GETCHATROOMBYID:: TAKE ROOM"
 	currentChatroom <- takeMVar room
 	putMVar room currentChatroom
 	if cId == getRoomId currentChatroom
@@ -261,7 +259,7 @@ broadcastJoin :: Client -> Chatroom -> IO ()
 broadcastJoin c ch = do
 	let broadcastMsg = chatroomJoinBroadcast c ch
 	putStrLn "Broadcasting..."
-	head $ map (\x -> sendToClient x broadcastMsg) (getRoomClients ch)
+	mapM_ (\x -> sendToClient x broadcastMsg) (getRoomClients ch)
 	putStrLn "Broadcast sent!"
 
 chatroomJoinBroadcast :: Client -> Chatroom -> String
@@ -271,14 +269,8 @@ leaveChatroom :: Socket -> String -> Forum -> IO ()
 leaveChatroom s msg forumMV = do
 	putStrLn "Getting Leave Message"
 	let (chatroomID, clientID, clientName) = getLeaveMessageInfo msg
-	forumCheck <- isEmptyMVar forumMV
-	putStrLn "FORUM CHECK: "
-	putStrLn $ show forumCheck
 	forum <- takeMVar forumMV
-	putStrLn "CHATROOM GETTING CHATROOM BY ID: "
 	maybeChatroomMV <- getChatroomByID (read chatroomID) forum
-	putStrLn "CHATROOM MAYBE CHECK: "
-	putStrLn $ show $ isJust maybeChatroomMV
 	if isJust maybeChatroomMV
 		then do
 			let chatroomMV = fromJust maybeChatroomMV
@@ -297,7 +289,6 @@ leaveChatroom s msg forumMV = do
 					else do
 						putStrLn "Room is present"
 						setSGR [SetColor Foreground Vivid Green]
-						putStrLn "SENDING PSEUDO RESPONSE"
 						sendPseudoLeaveResponse s clientID chatroomID
 						setSGR [SetColor Foreground Dull Magenta]
 						broadcastPseudoLeave clientID clientName chatroom
@@ -323,7 +314,7 @@ broadcastLeave cl ch = do
 	let broadcastMsg = chatroomLeaveBroadcast cl ch
 	putStrLn "Broadcasting leave:"
 	putStrLn broadcastMsg
-	head $ map (\x -> NSB.send (getClientSocket x) $ B.pack broadcastMsg) (getRoomClients ch)
+	mapM_ (\x -> NSB.send (getClientSocket x) $ B.pack broadcastMsg) (getRoomClients ch)
 	putStrLn "Leave broadcast sent!"
 
 broadcastPseudoLeave :: String -> String -> Chatroom -> IO ()
@@ -331,7 +322,7 @@ broadcastPseudoLeave clId clNm ch = do
 	let broadcastMsg = chatroomPseudoLeaveBroadcast clId clNm ch
 	putStrLn "Broadcasting leave:"
 	putStrLn broadcastMsg
-	head $ map (\x -> NSB.send (getClientSocket x) $ B.pack broadcastMsg) (getRoomClients ch)
+	mapM_ (\x -> NSB.send (getClientSocket x) $ B.pack broadcastMsg) (getRoomClients ch)
 	putStrLn "Leave broadcast sent!"
 
 chatroomLeaveBroadcast :: Client -> Chatroom -> String
@@ -402,7 +393,7 @@ broadcastChat :: String -> String -> String -> Chatroom -> IO ()
 broadcastChat roomId clientName message ch = do
 	let chatMessage = chatroomChatBroadcast roomId clientName message
 	putStrLn "Broadcasting Chat"
-	head $ map (\x -> sendToClient x chatMessage) (getRoomClients ch)
+	mapM_ (\x -> sendToClient x chatMessage) (getRoomClients ch)
 	putStrLn "Chat Broadcast Sent!"
 
 chatroomChatBroadcast :: String -> String -> String -> String
