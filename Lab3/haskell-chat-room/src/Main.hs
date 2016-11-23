@@ -379,6 +379,7 @@ chatToRoom s msg forumMV = do
 					putMVar chatroomMV (Chatroom (getRoomName chatroom) ((getRoomClients chatroom) \\ [(fromJust maybeClient)]) (getRoomId chatroom))
 					putMVar forumMV forum
 					else do
+						putMVar chatroomMV chatroom
 						putMVar forumMV forum
 				else do
 					putMVar forumMV forum

@@ -1,10 +1,10 @@
 
 ==================== FINAL INTERFACE ====================
-2016-11-23 13:26:36.314697 UTC
+2016-11-23 13:31:39.591677 UTC
 
 interface main@main:Main 8001
-  interface hash: 1144a5b92e94864bfad18325077551a9
-  ABI hash: f8e3ef36ff383e53b46bc328eb76c54a
+  interface hash: 542bab9d27adc93a26a6bffe0dd76b8e
+  ABI hash: 7f0a5008cc3de1f2ed3e48d3735a5c28
   export-list hash: 658e80080cbb66869483c4cbf4ca5b77
   orphan hash: 693e9af84d3dfcc71e640e005bdc5e2e
   flag hash: 8668484c2415d15fbda37e3f0d670903
@@ -359,7 +359,7 @@ d6831ef04cb9301b090dfae6f7bb7ec7
                         Main.broadcastLeave2
                         GHC.Types.True
                         ipv4 } } } } } } } } }) -}
-c88a8a6f088aa45c5706ad426e6a718c
+51ffabf3e9a424f57ffb055dbb0ff75b
   $wchatToRoom ::
     GHC.Base.String
     -> Main.Forum
@@ -437,11 +437,17 @@ c88a8a6f088aa45c5706ad426e6a718c
                         GHC.Base.Nothing
                         -> case GHC.Prim.putMVar#
                                   @ GHC.Prim.RealWorld
+                                  @ Main.Chatroom
+                                  mvar#1
+                                  wild3
+                                  ipv7 of s2# { DEFAULT ->
+                           case GHC.Prim.putMVar#
+                                  @ GHC.Prim.RealWorld
                                   @ [GHC.MVar.MVar Main.Chatroom]
                                   mvar#
                                   ipv3
-                                  ipv7 of s2# { DEFAULT ->
-                           (# s2#, GHC.Tuple.() #) }
+                                  s2# of s2#1 { DEFAULT ->
+                           (# s2#1, GHC.Tuple.() #) } }
                         GHC.Base.Just ipv9
                         -> case GHC.IO.Handle.Text.hPutStr2
                                   GHC.IO.Handle.FD.stdout
@@ -990,7 +996,7 @@ fe800181d9e42a8dcf97b250b62adfb8
                    (w2 :: Main.Chatroom)
                    (w3 :: GHC.Prim.State# GHC.Prim.RealWorld)[OneShot] ->
                  Main.$wbroadcastPseudoLeave w1 w2 w3) -}
-7e3f93ee5486e1725f21b2623eb4996d
+9641fbbc071833ae9592fd32b36ea58f
   chatToRoom ::
     Network.Socket.Types.Socket
     -> GHC.Base.String -> Main.Forum -> GHC.Types.IO ()
@@ -1002,7 +1008,7 @@ fe800181d9e42a8dcf97b250b62adfb8
                  ->_R <GHC.Base.String>_R
                  ->_R <Main.Forum>_R
                  ->_R Sym (GHC.Types.N:IO[0] <()>_R)) -}
-4ca1cd4660cd615fb5c66a7b13d86907
+2c3da165407a7fa15e3e64cac5de1cdd
   chatToRoom1 ::
     Network.Socket.Types.Socket
     -> GHC.Base.String
