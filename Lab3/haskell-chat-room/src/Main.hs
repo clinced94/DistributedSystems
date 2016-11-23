@@ -269,6 +269,9 @@ leaveChatroom :: Socket -> String -> Forum -> IO ()
 leaveChatroom s msg forumMV = do
 	putStrLn "Getting Leave Message"
 	let (chatroomID, clientID, clientName) = getLeaveMessageInfo msg
+	forumCheck <- isEmptyMVar forumMV
+	putStrLn "FORUM CHECK: "
+	putStrLn $ show forumCheck
 	forum <- takeMVar forumMV
 	maybeChatroomMV <- getChatroomByID (read chatroomID) forum
 	putStrLn "CHATROOM CHECK: "
